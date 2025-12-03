@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HyreLog Dashboard
 
-## Getting Started
+A Next.js dashboard application for managing HyreLog audit logs.
 
-First, run the development server:
+## Architecture
 
+- **Backend API/Workers**: Fastify, Prisma, S3, Billing, Hash-chain, GDPR Worker, Cron jobs (AWS)
+- **Dashboard**: Next.js App Router + Prisma + Better-Auth (Vercel)
+- **Database**: Shared PostgreSQL database (Supabase/AWS RDS)
+
+## Important Rules
+
+- **This repo MUST NOT create migrations**. Only the backend owns schema & migrations.
+- **Dashboard ONLY runs `npx prisma generate`**.
+- All schema updates come from backend repo and must be copied into this repo before generating Prisma client.
+
+## Setup
+
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Copy the Prisma schema from the backend repo to `prisma/schema.prisma`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Generate Prisma client:
+```bash
+npx prisma generate
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Create `.env` file (see `.env.example`):
+```env
+DATABASE_URL=postgres://user:password@localhost:5432/hyrelog
+BETTER_AUTH_SECRET=your-secret-key-change-in-production
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_HYRELOG_ENV=development
+```
 
-## Learn More
+5. Run development server:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Build
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pages
 
-## Deploy on Vercel
+- `/overview` - Dashboard overview with usage charts
+- `/workspaces` - Manage workspaces
+- `/explorer` - Event explorer with filters
+- `/timeline` - Visual timeline of events
+- `/actors` - View actors and their activity
+- `/resources` - View resources and their activity
+- `/billing` - Usage & billing information
+- `/alerts` - Configure and view alerts
+- `/gdpr` - GDPR request management
+- `/region` - Data region and residency settings
+- `/api-keys` - API key management
+- `/settings` - Company and workspace settings
+- `/trust` - Trust & security information
+- `/docs` - Documentation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS v4
+- shadcn/ui
+- Better-Auth
+- Prisma Client
+- Recharts
+- next-themes
+- Lucide icons
+
+## Notes
+
+- Some pages may have runtime errors with Recharts - this is a known compatibility issue that may need version updates
+- Better-Auth setup may need adjustment based on your database schema
+- Middleware uses deprecated convention - consider updating to Next.js proxy pattern
