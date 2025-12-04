@@ -28,10 +28,16 @@ export type AggregateCompany = {
 
 export type CompanyAvgAggregateOutputType = {
   retentionDays: number | null
+  customMonthlyPrice: number | null
+  customEventLimit: number | null
+  customRetentionDays: number | null
 }
 
 export type CompanySumAggregateOutputType = {
   retentionDays: number | null
+  customMonthlyPrice: number | null
+  customEventLimit: number | null
+  customRetentionDays: number | null
 }
 
 export type CompanyMinAggregateOutputType = {
@@ -40,6 +46,19 @@ export type CompanyMinAggregateOutputType = {
   slug: string | null
   retentionDays: number | null
   dataRegion: $Enums.Region | null
+  onboardingStep: $Enums.OnboardingStep | null
+  billingMode: $Enums.BillingMode | null
+  planTier: $Enums.PlanTier | null
+  customMonthlyPrice: number | null
+  customEventLimit: number | null
+  customRetentionDays: number | null
+  invoiceTerm: $Enums.InvoiceTerm | null
+  contractStart: Date | null
+  contractEnd: Date | null
+  crmDealId: string | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  stripePriceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -50,6 +69,19 @@ export type CompanyMaxAggregateOutputType = {
   slug: string | null
   retentionDays: number | null
   dataRegion: $Enums.Region | null
+  onboardingStep: $Enums.OnboardingStep | null
+  billingMode: $Enums.BillingMode | null
+  planTier: $Enums.PlanTier | null
+  customMonthlyPrice: number | null
+  customEventLimit: number | null
+  customRetentionDays: number | null
+  invoiceTerm: $Enums.InvoiceTerm | null
+  contractStart: Date | null
+  contractEnd: Date | null
+  crmDealId: string | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  stripePriceId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,6 +93,19 @@ export type CompanyCountAggregateOutputType = {
   retentionDays: number
   dataRegion: number
   replicateTo: number
+  onboardingStep: number
+  billingMode: number
+  planTier: number
+  customMonthlyPrice: number
+  customEventLimit: number
+  customRetentionDays: number
+  invoiceTerm: number
+  contractStart: number
+  contractEnd: number
+  crmDealId: number
+  stripeCustomerId: number
+  stripeSubscriptionId: number
+  stripePriceId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -69,10 +114,16 @@ export type CompanyCountAggregateOutputType = {
 
 export type CompanyAvgAggregateInputType = {
   retentionDays?: true
+  customMonthlyPrice?: true
+  customEventLimit?: true
+  customRetentionDays?: true
 }
 
 export type CompanySumAggregateInputType = {
   retentionDays?: true
+  customMonthlyPrice?: true
+  customEventLimit?: true
+  customRetentionDays?: true
 }
 
 export type CompanyMinAggregateInputType = {
@@ -81,6 +132,19 @@ export type CompanyMinAggregateInputType = {
   slug?: true
   retentionDays?: true
   dataRegion?: true
+  onboardingStep?: true
+  billingMode?: true
+  planTier?: true
+  customMonthlyPrice?: true
+  customEventLimit?: true
+  customRetentionDays?: true
+  invoiceTerm?: true
+  contractStart?: true
+  contractEnd?: true
+  crmDealId?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  stripePriceId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -91,6 +155,19 @@ export type CompanyMaxAggregateInputType = {
   slug?: true
   retentionDays?: true
   dataRegion?: true
+  onboardingStep?: true
+  billingMode?: true
+  planTier?: true
+  customMonthlyPrice?: true
+  customEventLimit?: true
+  customRetentionDays?: true
+  invoiceTerm?: true
+  contractStart?: true
+  contractEnd?: true
+  crmDealId?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  stripePriceId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +179,19 @@ export type CompanyCountAggregateInputType = {
   retentionDays?: true
   dataRegion?: true
   replicateTo?: true
+  onboardingStep?: true
+  billingMode?: true
+  planTier?: true
+  customMonthlyPrice?: true
+  customEventLimit?: true
+  customRetentionDays?: true
+  invoiceTerm?: true
+  contractStart?: true
+  contractEnd?: true
+  crmDealId?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  stripePriceId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -200,6 +290,19 @@ export type CompanyGroupByOutputType = {
   retentionDays: number
   dataRegion: $Enums.Region
   replicateTo: $Enums.Region[]
+  onboardingStep: $Enums.OnboardingStep | null
+  billingMode: $Enums.BillingMode
+  planTier: $Enums.PlanTier | null
+  customMonthlyPrice: number | null
+  customEventLimit: number | null
+  customRetentionDays: number | null
+  invoiceTerm: $Enums.InvoiceTerm | null
+  contractStart: Date | null
+  contractEnd: Date | null
+  crmDealId: string | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  stripePriceId: string | null
   createdAt: Date
   updatedAt: Date
   _count: CompanyCountAggregateOutputType | null
@@ -234,6 +337,19 @@ export type CompanyWhereInput = {
   retentionDays?: Prisma.IntFilter<"Company"> | number
   dataRegion?: Prisma.EnumRegionFilter<"Company"> | $Enums.Region
   replicateTo?: Prisma.EnumRegionNullableListFilter<"Company">
+  onboardingStep?: Prisma.EnumOnboardingStepNullableFilter<"Company"> | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFilter<"Company"> | $Enums.BillingMode
+  planTier?: Prisma.EnumPlanTierNullableFilter<"Company"> | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.IntNullableFilter<"Company"> | number | null
+  customEventLimit?: Prisma.IntNullableFilter<"Company"> | number | null
+  customRetentionDays?: Prisma.IntNullableFilter<"Company"> | number | null
+  invoiceTerm?: Prisma.EnumInvoiceTermNullableFilter<"Company"> | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
+  contractEnd?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
+  crmDealId?: Prisma.StringNullableFilter<"Company"> | string | null
+  stripeCustomerId?: Prisma.StringNullableFilter<"Company"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableFilter<"Company"> | string | null
+  stripePriceId?: Prisma.StringNullableFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -266,6 +382,19 @@ export type CompanyOrderByWithRelationInput = {
   retentionDays?: Prisma.SortOrder
   dataRegion?: Prisma.SortOrder
   replicateTo?: Prisma.SortOrder
+  onboardingStep?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  planTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceTerm?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  crmDealId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripePriceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   workspaces?: Prisma.WorkspaceOrderByRelationAggregateInput
@@ -294,6 +423,8 @@ export type CompanyOrderByWithRelationInput = {
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
   AND?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
   OR?: Prisma.CompanyWhereInput[]
   NOT?: Prisma.CompanyWhereInput | Prisma.CompanyWhereInput[]
@@ -301,6 +432,17 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   retentionDays?: Prisma.IntFilter<"Company"> | number
   dataRegion?: Prisma.EnumRegionFilter<"Company"> | $Enums.Region
   replicateTo?: Prisma.EnumRegionNullableListFilter<"Company">
+  onboardingStep?: Prisma.EnumOnboardingStepNullableFilter<"Company"> | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFilter<"Company"> | $Enums.BillingMode
+  planTier?: Prisma.EnumPlanTierNullableFilter<"Company"> | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.IntNullableFilter<"Company"> | number | null
+  customEventLimit?: Prisma.IntNullableFilter<"Company"> | number | null
+  customRetentionDays?: Prisma.IntNullableFilter<"Company"> | number | null
+  invoiceTerm?: Prisma.EnumInvoiceTermNullableFilter<"Company"> | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
+  contractEnd?: Prisma.DateTimeNullableFilter<"Company"> | Date | string | null
+  crmDealId?: Prisma.StringNullableFilter<"Company"> | string | null
+  stripePriceId?: Prisma.StringNullableFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Company"> | Date | string
   workspaces?: Prisma.WorkspaceListRelationFilter
@@ -324,7 +466,7 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<{
   gdprRequests?: Prisma.GdprRequestListRelationFilter
   globalEventIndex?: Prisma.GlobalEventIndexListRelationFilter
   pendingWrites?: Prisma.PendingWriteListRelationFilter
-}, "id" | "slug">
+}, "id" | "slug" | "stripeCustomerId" | "stripeSubscriptionId">
 
 export type CompanyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -333,6 +475,19 @@ export type CompanyOrderByWithAggregationInput = {
   retentionDays?: Prisma.SortOrder
   dataRegion?: Prisma.SortOrder
   replicateTo?: Prisma.SortOrder
+  onboardingStep?: Prisma.SortOrderInput | Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  planTier?: Prisma.SortOrderInput | Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrderInput | Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrderInput | Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrderInput | Prisma.SortOrder
+  invoiceTerm?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  contractEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  crmDealId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripePriceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CompanyCountOrderByAggregateInput
@@ -352,6 +507,19 @@ export type CompanyScalarWhereWithAggregatesInput = {
   retentionDays?: Prisma.IntWithAggregatesFilter<"Company"> | number
   dataRegion?: Prisma.EnumRegionWithAggregatesFilter<"Company"> | $Enums.Region
   replicateTo?: Prisma.EnumRegionNullableListFilter<"Company">
+  onboardingStep?: Prisma.EnumOnboardingStepNullableWithAggregatesFilter<"Company"> | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeWithAggregatesFilter<"Company"> | $Enums.BillingMode
+  planTier?: Prisma.EnumPlanTierNullableWithAggregatesFilter<"Company"> | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.IntNullableWithAggregatesFilter<"Company"> | number | null
+  customEventLimit?: Prisma.IntNullableWithAggregatesFilter<"Company"> | number | null
+  customRetentionDays?: Prisma.IntNullableWithAggregatesFilter<"Company"> | number | null
+  invoiceTerm?: Prisma.EnumInvoiceTermNullableWithAggregatesFilter<"Company"> | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.DateTimeNullableWithAggregatesFilter<"Company"> | Date | string | null
+  contractEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"Company"> | Date | string | null
+  crmDealId?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  stripeCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
+  stripePriceId?: Prisma.StringNullableWithAggregatesFilter<"Company"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Company"> | Date | string
 }
@@ -363,6 +531,19 @@ export type CompanyCreateInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -395,6 +576,19 @@ export type CompanyUncheckedCreateInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -427,6 +621,19 @@ export type CompanyUpdateInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -459,6 +666,19 @@ export type CompanyUncheckedUpdateInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -491,6 +711,19 @@ export type CompanyCreateManyInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -502,6 +735,19 @@ export type CompanyUpdateManyMutationInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -513,6 +759,19 @@ export type CompanyUncheckedUpdateManyInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -532,12 +791,28 @@ export type CompanyCountOrderByAggregateInput = {
   retentionDays?: Prisma.SortOrder
   dataRegion?: Prisma.SortOrder
   replicateTo?: Prisma.SortOrder
+  onboardingStep?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  planTier?: Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrder
+  invoiceTerm?: Prisma.SortOrder
+  contractStart?: Prisma.SortOrder
+  contractEnd?: Prisma.SortOrder
+  crmDealId?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  stripePriceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CompanyAvgOrderByAggregateInput = {
   retentionDays?: Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrder
 }
 
 export type CompanyMaxOrderByAggregateInput = {
@@ -546,6 +821,19 @@ export type CompanyMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   retentionDays?: Prisma.SortOrder
   dataRegion?: Prisma.SortOrder
+  onboardingStep?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  planTier?: Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrder
+  invoiceTerm?: Prisma.SortOrder
+  contractStart?: Prisma.SortOrder
+  contractEnd?: Prisma.SortOrder
+  crmDealId?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  stripePriceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -556,12 +844,28 @@ export type CompanyMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   retentionDays?: Prisma.SortOrder
   dataRegion?: Prisma.SortOrder
+  onboardingStep?: Prisma.SortOrder
+  billingMode?: Prisma.SortOrder
+  planTier?: Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrder
+  invoiceTerm?: Prisma.SortOrder
+  contractStart?: Prisma.SortOrder
+  contractEnd?: Prisma.SortOrder
+  crmDealId?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  stripePriceId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type CompanySumOrderByAggregateInput = {
   retentionDays?: Prisma.SortOrder
+  customMonthlyPrice?: Prisma.SortOrder
+  customEventLimit?: Prisma.SortOrder
+  customRetentionDays?: Prisma.SortOrder
 }
 
 export type CompanyScalarRelationFilter = {
@@ -593,6 +897,30 @@ export type EnumRegionFieldUpdateOperationsInput = {
 export type CompanyUpdatereplicateToInput = {
   set?: $Enums.Region[]
   push?: $Enums.Region | $Enums.Region[]
+}
+
+export type NullableEnumOnboardingStepFieldUpdateOperationsInput = {
+  set?: $Enums.OnboardingStep | null
+}
+
+export type EnumBillingModeFieldUpdateOperationsInput = {
+  set?: $Enums.BillingMode
+}
+
+export type NullableEnumPlanTierFieldUpdateOperationsInput = {
+  set?: $Enums.PlanTier | null
+}
+
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableEnumInvoiceTermFieldUpdateOperationsInput = {
+  set?: $Enums.InvoiceTerm | null
 }
 
 export type CompanyCreateNestedOneWithoutWorkspacesInput = {
@@ -898,6 +1226,19 @@ export type CompanyCreateWithoutWorkspacesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectCreateNestedManyWithoutCompanyInput
@@ -929,6 +1270,19 @@ export type CompanyUncheckedCreateWithoutWorkspacesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutCompanyInput
@@ -976,6 +1330,19 @@ export type CompanyUpdateWithoutWorkspacesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUpdateManyWithoutCompanyNestedInput
@@ -1007,6 +1374,19 @@ export type CompanyUncheckedUpdateWithoutWorkspacesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1038,6 +1418,19 @@ export type CompanyCreateWithoutProjectsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1069,6 +1462,19 @@ export type CompanyUncheckedCreateWithoutProjectsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1116,6 +1522,19 @@ export type CompanyUpdateWithoutProjectsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1147,6 +1566,19 @@ export type CompanyUncheckedUpdateWithoutProjectsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1178,6 +1610,19 @@ export type CompanyCreateWithoutMembersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1209,6 +1654,19 @@ export type CompanyUncheckedCreateWithoutMembersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1256,6 +1714,19 @@ export type CompanyUpdateWithoutMembersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1287,6 +1758,19 @@ export type CompanyUncheckedUpdateWithoutMembersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1318,6 +1802,19 @@ export type CompanyCreateWithoutWorkspaceMembersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1349,6 +1846,19 @@ export type CompanyUncheckedCreateWithoutWorkspaceMembersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1396,6 +1906,19 @@ export type CompanyUpdateWithoutWorkspaceMembersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1427,6 +1950,19 @@ export type CompanyUncheckedUpdateWithoutWorkspaceMembersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1458,6 +1994,19 @@ export type CompanyCreateWithoutPlansInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1489,6 +2038,19 @@ export type CompanyUncheckedCreateWithoutPlansInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1536,6 +2098,19 @@ export type CompanyUpdateWithoutPlansInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1567,6 +2142,19 @@ export type CompanyUncheckedUpdateWithoutPlansInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1598,6 +2186,19 @@ export type CompanyCreateWithoutAddOnsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1629,6 +2230,19 @@ export type CompanyUncheckedCreateWithoutAddOnsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1676,6 +2290,19 @@ export type CompanyUpdateWithoutAddOnsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1707,6 +2334,19 @@ export type CompanyUncheckedUpdateWithoutAddOnsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1738,6 +2378,19 @@ export type CompanyCreateWithoutBillingMetersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1769,6 +2422,19 @@ export type CompanyUncheckedCreateWithoutBillingMetersInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1816,6 +2482,19 @@ export type CompanyUpdateWithoutBillingMetersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1847,6 +2526,19 @@ export type CompanyUncheckedUpdateWithoutBillingMetersInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -1878,6 +2570,19 @@ export type CompanyCreateWithoutUsageStatsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -1909,6 +2614,19 @@ export type CompanyUncheckedCreateWithoutUsageStatsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -1956,6 +2674,19 @@ export type CompanyUpdateWithoutUsageStatsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -1987,6 +2718,19 @@ export type CompanyUncheckedUpdateWithoutUsageStatsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2018,6 +2762,19 @@ export type CompanyCreateWithoutApiKeysInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2049,6 +2806,19 @@ export type CompanyUncheckedCreateWithoutApiKeysInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2096,6 +2866,19 @@ export type CompanyUpdateWithoutApiKeysInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2127,6 +2910,19 @@ export type CompanyUncheckedUpdateWithoutApiKeysInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2158,6 +2954,19 @@ export type CompanyCreateWithoutApiKeyLogsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2189,6 +2998,19 @@ export type CompanyUncheckedCreateWithoutApiKeyLogsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2236,6 +3058,19 @@ export type CompanyUpdateWithoutApiKeyLogsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2267,6 +3102,19 @@ export type CompanyUncheckedUpdateWithoutApiKeyLogsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2298,6 +3146,19 @@ export type CompanyCreateWithoutAuditEventsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2329,6 +3190,19 @@ export type CompanyUncheckedCreateWithoutAuditEventsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2376,6 +3250,19 @@ export type CompanyUpdateWithoutAuditEventsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2407,6 +3294,19 @@ export type CompanyUncheckedUpdateWithoutAuditEventsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2438,6 +3338,19 @@ export type CompanyCreateWithoutConfigChangeLogsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2469,6 +3382,19 @@ export type CompanyUncheckedCreateWithoutConfigChangeLogsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2516,6 +3442,19 @@ export type CompanyUpdateWithoutConfigChangeLogsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2547,6 +3486,19 @@ export type CompanyUncheckedUpdateWithoutConfigChangeLogsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2578,6 +3530,19 @@ export type CompanyCreateWithoutNotificationAlertsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2609,6 +3574,19 @@ export type CompanyUncheckedCreateWithoutNotificationAlertsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2656,6 +3634,19 @@ export type CompanyUpdateWithoutNotificationAlertsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2687,6 +3678,19 @@ export type CompanyUncheckedUpdateWithoutNotificationAlertsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2718,6 +3722,19 @@ export type CompanyCreateWithoutJobsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2749,6 +3766,19 @@ export type CompanyUncheckedCreateWithoutJobsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2796,6 +3826,19 @@ export type CompanyUpdateWithoutJobsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2827,6 +3870,19 @@ export type CompanyUncheckedUpdateWithoutJobsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2858,6 +3914,19 @@ export type CompanyCreateWithoutWebhooksInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -2889,6 +3958,19 @@ export type CompanyUncheckedCreateWithoutWebhooksInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -2936,6 +4018,19 @@ export type CompanyUpdateWithoutWebhooksInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -2967,6 +4062,19 @@ export type CompanyUncheckedUpdateWithoutWebhooksInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -2998,6 +4106,19 @@ export type CompanyCreateWithoutTemplatesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3029,6 +4150,19 @@ export type CompanyUncheckedCreateWithoutTemplatesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3076,6 +4210,19 @@ export type CompanyUpdateWithoutTemplatesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3107,6 +4254,19 @@ export type CompanyUncheckedUpdateWithoutTemplatesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -3138,6 +4298,19 @@ export type CompanyCreateWithoutTemplateAssignmentsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3169,6 +4342,19 @@ export type CompanyUncheckedCreateWithoutTemplateAssignmentsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3216,6 +4402,19 @@ export type CompanyUpdateWithoutTemplateAssignmentsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3247,6 +4446,19 @@ export type CompanyUncheckedUpdateWithoutTemplateAssignmentsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -3278,6 +4490,19 @@ export type CompanyCreateWithoutThresholdAlertsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3309,6 +4534,19 @@ export type CompanyUncheckedCreateWithoutThresholdAlertsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3356,6 +4594,19 @@ export type CompanyUpdateWithoutThresholdAlertsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3387,6 +4638,19 @@ export type CompanyUncheckedUpdateWithoutThresholdAlertsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -3418,6 +4682,19 @@ export type CompanyCreateWithoutGlobalEventIndexInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3449,6 +4726,19 @@ export type CompanyUncheckedCreateWithoutGlobalEventIndexInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3496,6 +4786,19 @@ export type CompanyUpdateWithoutGlobalEventIndexInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3527,6 +4830,19 @@ export type CompanyUncheckedUpdateWithoutGlobalEventIndexInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -3558,6 +4874,19 @@ export type CompanyCreateWithoutGdprRequestsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3589,6 +4918,19 @@ export type CompanyUncheckedCreateWithoutGdprRequestsInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3636,6 +4978,19 @@ export type CompanyUpdateWithoutGdprRequestsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3667,6 +5022,19 @@ export type CompanyUncheckedUpdateWithoutGdprRequestsInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -3698,6 +5066,19 @@ export type CompanyCreateWithoutPendingWritesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceCreateNestedManyWithoutCompanyInput
@@ -3729,6 +5110,19 @@ export type CompanyUncheckedCreateWithoutPendingWritesInput = {
   retentionDays?: number
   dataRegion?: $Enums.Region
   replicateTo?: Prisma.CompanyCreatereplicateToInput | $Enums.Region[]
+  onboardingStep?: $Enums.OnboardingStep | null
+  billingMode?: $Enums.BillingMode
+  planTier?: $Enums.PlanTier | null
+  customMonthlyPrice?: number | null
+  customEventLimit?: number | null
+  customRetentionDays?: number | null
+  invoiceTerm?: $Enums.InvoiceTerm | null
+  contractStart?: Date | string | null
+  contractEnd?: Date | string | null
+  crmDealId?: string | null
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  stripePriceId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   workspaces?: Prisma.WorkspaceUncheckedCreateNestedManyWithoutCompanyInput
@@ -3776,6 +5170,19 @@ export type CompanyUpdateWithoutPendingWritesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUpdateManyWithoutCompanyNestedInput
@@ -3807,6 +5214,19 @@ export type CompanyUncheckedUpdateWithoutPendingWritesInput = {
   retentionDays?: Prisma.IntFieldUpdateOperationsInput | number
   dataRegion?: Prisma.EnumRegionFieldUpdateOperationsInput | $Enums.Region
   replicateTo?: Prisma.CompanyUpdatereplicateToInput | $Enums.Region[]
+  onboardingStep?: Prisma.NullableEnumOnboardingStepFieldUpdateOperationsInput | $Enums.OnboardingStep | null
+  billingMode?: Prisma.EnumBillingModeFieldUpdateOperationsInput | $Enums.BillingMode
+  planTier?: Prisma.NullableEnumPlanTierFieldUpdateOperationsInput | $Enums.PlanTier | null
+  customMonthlyPrice?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customEventLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customRetentionDays?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  invoiceTerm?: Prisma.NullableEnumInvoiceTermFieldUpdateOperationsInput | $Enums.InvoiceTerm | null
+  contractStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  contractEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  crmDealId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripePriceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workspaces?: Prisma.WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput
@@ -4040,6 +5460,19 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   retentionDays?: boolean
   dataRegion?: boolean
   replicateTo?: boolean
+  onboardingStep?: boolean
+  billingMode?: boolean
+  planTier?: boolean
+  customMonthlyPrice?: boolean
+  customEventLimit?: boolean
+  customRetentionDays?: boolean
+  invoiceTerm?: boolean
+  contractStart?: boolean
+  contractEnd?: boolean
+  crmDealId?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  stripePriceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   workspaces?: boolean | Prisma.Company$workspacesArgs<ExtArgs>
@@ -4073,6 +5506,19 @@ export type CompanySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   retentionDays?: boolean
   dataRegion?: boolean
   replicateTo?: boolean
+  onboardingStep?: boolean
+  billingMode?: boolean
+  planTier?: boolean
+  customMonthlyPrice?: boolean
+  customEventLimit?: boolean
+  customRetentionDays?: boolean
+  invoiceTerm?: boolean
+  contractStart?: boolean
+  contractEnd?: boolean
+  crmDealId?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  stripePriceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["company"]>
@@ -4084,6 +5530,19 @@ export type CompanySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   retentionDays?: boolean
   dataRegion?: boolean
   replicateTo?: boolean
+  onboardingStep?: boolean
+  billingMode?: boolean
+  planTier?: boolean
+  customMonthlyPrice?: boolean
+  customEventLimit?: boolean
+  customRetentionDays?: boolean
+  invoiceTerm?: boolean
+  contractStart?: boolean
+  contractEnd?: boolean
+  crmDealId?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  stripePriceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["company"]>
@@ -4095,11 +5554,24 @@ export type CompanySelectScalar = {
   retentionDays?: boolean
   dataRegion?: boolean
   replicateTo?: boolean
+  onboardingStep?: boolean
+  billingMode?: boolean
+  planTier?: boolean
+  customMonthlyPrice?: boolean
+  customEventLimit?: boolean
+  customRetentionDays?: boolean
+  invoiceTerm?: boolean
+  contractStart?: boolean
+  contractEnd?: boolean
+  crmDealId?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  stripePriceId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "retentionDays" | "dataRegion" | "replicateTo" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
+export type CompanyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "retentionDays" | "dataRegion" | "replicateTo" | "onboardingStep" | "billingMode" | "planTier" | "customMonthlyPrice" | "customEventLimit" | "customRetentionDays" | "invoiceTerm" | "contractStart" | "contractEnd" | "crmDealId" | "stripeCustomerId" | "stripeSubscriptionId" | "stripePriceId" | "createdAt" | "updatedAt", ExtArgs["result"]["company"]>
 export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   workspaces?: boolean | Prisma.Company$workspacesArgs<ExtArgs>
   projects?: boolean | Prisma.Company$projectsArgs<ExtArgs>
@@ -4159,6 +5631,19 @@ export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     retentionDays: number
     dataRegion: $Enums.Region
     replicateTo: $Enums.Region[]
+    onboardingStep: $Enums.OnboardingStep | null
+    billingMode: $Enums.BillingMode
+    planTier: $Enums.PlanTier | null
+    customMonthlyPrice: number | null
+    customEventLimit: number | null
+    customRetentionDays: number | null
+    invoiceTerm: $Enums.InvoiceTerm | null
+    contractStart: Date | null
+    contractEnd: Date | null
+    crmDealId: string | null
+    stripeCustomerId: string | null
+    stripeSubscriptionId: string | null
+    stripePriceId: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["company"]>
@@ -4611,6 +6096,19 @@ export interface CompanyFieldRefs {
   readonly retentionDays: Prisma.FieldRef<"Company", 'Int'>
   readonly dataRegion: Prisma.FieldRef<"Company", 'Region'>
   readonly replicateTo: Prisma.FieldRef<"Company", 'Region[]'>
+  readonly onboardingStep: Prisma.FieldRef<"Company", 'OnboardingStep'>
+  readonly billingMode: Prisma.FieldRef<"Company", 'BillingMode'>
+  readonly planTier: Prisma.FieldRef<"Company", 'PlanTier'>
+  readonly customMonthlyPrice: Prisma.FieldRef<"Company", 'Int'>
+  readonly customEventLimit: Prisma.FieldRef<"Company", 'Int'>
+  readonly customRetentionDays: Prisma.FieldRef<"Company", 'Int'>
+  readonly invoiceTerm: Prisma.FieldRef<"Company", 'InvoiceTerm'>
+  readonly contractStart: Prisma.FieldRef<"Company", 'DateTime'>
+  readonly contractEnd: Prisma.FieldRef<"Company", 'DateTime'>
+  readonly crmDealId: Prisma.FieldRef<"Company", 'String'>
+  readonly stripeCustomerId: Prisma.FieldRef<"Company", 'String'>
+  readonly stripeSubscriptionId: Prisma.FieldRef<"Company", 'String'>
+  readonly stripePriceId: Prisma.FieldRef<"Company", 'String'>
   readonly createdAt: Prisma.FieldRef<"Company", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Company", 'DateTime'>
 }

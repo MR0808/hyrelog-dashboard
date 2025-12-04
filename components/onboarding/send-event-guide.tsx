@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateOnboardingStep } from '@/app/actions/onboarding';
+import { FancyButton } from '@/components/ui/fancy-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -204,16 +205,26 @@ client.log(
       </Card>
 
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" asChild>
+        <FancyButton 
+          type="button" 
+          variant="outline" 
+          asChild
+          icon={<ArrowLeft className="h-4 w-4" />}
+          iconPosition="left"
+        >
           <Link href="/onboarding/api-key">
-            <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Link>
-        </Button>
-        <Button onClick={handleContinue} disabled={!eventSent}>
+        </FancyButton>
+        <FancyButton 
+          onClick={handleContinue} 
+          disabled={!eventSent}
+          variant="primary"
+          icon={eventSent ? <ArrowRight className="h-4 w-4" /> : undefined}
+          iconPosition="right"
+        >
           {eventSent ? 'Continue' : 'Waiting for event...'}
-          {eventSent && <ArrowRight className="ml-2 h-4 w-4" />}
-        </Button>
+        </FancyButton>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { requireAuth } from '@/lib/auth-server';
 import { getCurrentOnboardingStep } from '@/app/actions/onboarding';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { FancyButton } from '@/components/ui/fancy-button';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
@@ -57,12 +57,17 @@ export default async function OnboardingStartPage() {
           </div>
           
           <div className="flex justify-center pt-4">
-            <Button asChild size="lg">
+            <FancyButton 
+              asChild 
+              size="md" 
+              variant="primary"
+              icon={<ArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+            >
               <Link href="/onboarding/company">
                 Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
+            </FancyButton>
           </div>
         </CardContent>
       </Card>

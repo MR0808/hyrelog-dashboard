@@ -8,6 +8,26 @@ import type { OnboardingStep } from '@/lib/onboarding';
 import { revalidatePath } from 'next/cache';
 
 /**
+ * Convert Prisma enum value to TypeScript onboarding step
+ */
+function fromPrismaOnboardingStep(step: string | null | undefined): OnboardingStep | null {
+  if (!step) return null;
+  
+  const mapping: Record<string, OnboardingStep> = {
+    'START': 'start',
+    'COMPANY': 'company',
+    'PLAN': 'plan',
+    'BILLING': 'billing',
+    'WORKSPACE': 'workspace',
+    'API_KEY': 'api-key',
+    'SEND_EVENT': 'send-event',
+    'COMPLETE': 'complete',
+  };
+  
+  return mapping[step] || null;
+}
+
+/**
  * Get current onboarding step for user
  */
 export async function getCurrentOnboardingStep(): Promise<OnboardingStep | null> {
@@ -32,7 +52,25 @@ export async function getCurrentOnboardingStep(): Promise<OnboardingStep | null>
   });
   
   // @ts-ignore - onboardingStep may not exist yet in schema
-  return company?.onboardingStep || null;
+  const prismaStep = company?.onboardingStep;
+  return fromPrismaOnboardingStep(prismaStep);
+}
+
+/**
+ * Convert TypeScript onboarding step to Prisma enum value
+ */
+function toPrismaOnboardingStep(step: OnboardingStep): string {
+  const mapping: Record<OnboardingStep, string> = {
+    'start': 'START',
+    'company': 'COMPANY',
+    'plan': 'PLAN',
+    'billing': 'BILLING',
+    'workspace': 'WORKSPACE',
+    'api-key': 'API_KEY',
+    'send-event': 'SEND_EVENT',
+    'complete': 'COMPLETE',
+  };
+  return mapping[step];
 }
 
 /**
@@ -57,12 +95,15 @@ export async function updateOnboardingStep(
       return { success: false, error: 'Access denied' };
     }
     
+    // Convert to Prisma enum value
+    const prismaStep = toPrismaOnboardingStep(step);
+    
     // Update company onboarding step
     await prisma.company.update({
       where: { id: companyId },
       data: {
         // @ts-ignore - onboardingStep may not exist yet in schema
-        onboardingStep: step,
+        onboardingStep: prismaStep,
       },
     });
     
@@ -71,11 +112,12 @@ export async function updateOnboardingStep(
       where: { id: companyUser.id },
       data: {
         // @ts-ignore - onboardingStep may not exist yet in schema
-        onboardingStep: step,
+        onboardingStep: prismaStep,
       },
     });
     
-    revalidatePath('/onboarding');
+    // Note: revalidatePath removed - cannot be called during Server Component render
+    // The page will refresh naturally on navigation or we can use router.refresh() client-side
     return { success: true };
   } catch (error) {
     console.error('Error updating onboarding step:', error);
@@ -106,7 +148,8 @@ export async function needsOnboarding(): Promise<boolean> {
       });
       
       // @ts-ignore - onboardingStep may not exist yet in schema
-      const step = companyData?.onboardingStep;
+      const prismaStep = companyData?.onboardingStep;
+      const step = fromPrismaOnboardingStep(prismaStep);
       if (!step || step !== 'complete') {
         return true;
       }

@@ -10,7 +10,21 @@ import { getUserCompanies } from './permissions';
  */
 export async function getSelectedCompanyId(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('hyrelog-selected-company-id')?.value || null;
+  const cookieCompanyId = cookieStore.get('hyrelog-selected-company-id')?.value;
+  
+  if (cookieCompanyId) {
+    return cookieCompanyId;
+  }
+  
+  // Fallback to first company if no cookie is set
+  // Note: We can't set cookies here (Server Component limitation)
+  // The cookie will be set via Server Actions when needed
+  const companies = await getUserCompanies();
+  if (companies.length > 0) {
+    return companies[0].id;
+  }
+  
+  return null;
 }
 
 /**

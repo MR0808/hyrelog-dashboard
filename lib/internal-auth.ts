@@ -26,17 +26,33 @@ const INTERNAL_SESSION_COOKIE = 'hyrelog-internal-session';
 export async function getInternalSession(): Promise<InternalUser | null> {
   try {
     const cookieStore = await cookies();
-    const sessionId = cookieStore.get(INTERNAL_SESSION_COOKIE)?.value;
+    const userId = cookieStore.get(INTERNAL_SESSION_COOKIE)?.value;
     
-    if (!sessionId) {
+    if (!userId) {
       return null;
     }
     
-    // TODO: Implement session lookup
-    // For now, this is a placeholder - actual implementation depends on session storage
-    // You might want to create an InternalSession table or use JWT tokens
-    
-    return null;
+    // Look up user from cookie
+    try {
+      // @ts-ignore - InternalUser model may not exist yet
+      const internalUser = await prisma.internalUser.findUnique({
+        where: { id: userId },
+      });
+      
+      if (!internalUser) {
+        return null;
+      }
+      
+      return {
+        id: internalUser.id,
+        email: internalUser.email,
+        name: internalUser.name,
+        role: internalUser.role as InternalUserRole,
+      };
+    } catch (error) {
+      // Model doesn't exist yet
+      return null;
+    }
   } catch {
     return null;
   }
@@ -49,7 +65,9 @@ export async function requireInternalAuth(): Promise<InternalUser> {
   const user = await getInternalSession();
   
   if (!user) {
-    throw new Error('Internal authentication required');
+    // Return a redirect-friendly error that Next.js can handle
+    const { redirect } = await import('next/navigation');
+    redirect('/internal/login');
   }
   
   return user;
@@ -64,9 +82,18 @@ export async function authenticateInternalUser(
 ): Promise<{ success: boolean; user?: InternalUser; error?: string }> {
   try {
     // @ts-ignore - InternalUser model may not exist yet
-    const internalUser = await prisma.internalUser.findUnique({
-      where: { email },
-    });
+    let internalUser;
+    try {
+      internalUser = await prisma.internalUser.findUnique({
+        where: { email },
+      });
+    } catch (error) {
+      // Model doesn't exist yet - return error
+      return { 
+        success: false, 
+        error: 'InternalUser model not found. Please apply schema changes first.' 
+      };
+    }
     
     if (!internalUser) {
       return { success: false, error: 'Invalid credentials' };

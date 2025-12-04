@@ -49,7 +49,7 @@ export async function createCompany(formData: FormData) {
         dataRegion: data.dataRegion,
         retentionDays: data.retentionDays || 90,
         // @ts-ignore - onboardingStep may not exist yet in schema
-        onboardingStep: 'company',
+        onboardingStep: 'COMPANY', // Prisma enum value
         // @ts-ignore - billingMode may not exist yet in schema
         billingMode: 'STRIPE',
         members: {
@@ -57,7 +57,7 @@ export async function createCompany(formData: FormData) {
             userId: session.user.id,
             role: 'OWNER',
             // @ts-ignore - onboardingStep may not exist yet in schema
-            onboardingStep: 'company',
+            onboardingStep: 'COMPANY', // Prisma enum value
           },
         },
       },

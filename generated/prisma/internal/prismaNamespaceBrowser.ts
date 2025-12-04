@@ -52,6 +52,9 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Session: 'Session',
+  Account: 'Account',
+  Verification: 'Verification',
   Company: 'Company',
   Workspace: 'Workspace',
   Project: 'Project',
@@ -79,7 +82,9 @@ export const ModelName = {
   GdprRequest: 'GdprRequest',
   GdprRequestApproval: 'GdprRequestApproval',
   PendingWrite: 'PendingWrite',
-  EventSchema: 'EventSchema'
+  EventSchema: 'EventSchema',
+  InternalUser: 'InternalUser',
+  AuditLog: 'AuditLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -103,11 +108,59 @@ export const UserScalarFieldEnum = {
   email: 'email',
   name: 'name',
   imageUrl: 'imageUrl',
+  isVerified: 'isVerified',
+  onboardingState: 'onboardingState',
+  emailVerified: 'emailVerified',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  expiresAt: 'expiresAt',
+  token: 'token',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  userId: 'userId'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const AccountScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  providerId: 'providerId',
+  userId: 'userId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  idToken: 'idToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  scope: 'scope',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
+
+
+export const VerificationScalarFieldEnum = {
+  id: 'id',
+  identifier: 'identifier',
+  value: 'value',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
 export const CompanyScalarFieldEnum = {
@@ -117,6 +170,19 @@ export const CompanyScalarFieldEnum = {
   retentionDays: 'retentionDays',
   dataRegion: 'dataRegion',
   replicateTo: 'replicateTo',
+  onboardingStep: 'onboardingStep',
+  billingMode: 'billingMode',
+  planTier: 'planTier',
+  customMonthlyPrice: 'customMonthlyPrice',
+  customEventLimit: 'customEventLimit',
+  customRetentionDays: 'customRetentionDays',
+  invoiceTerm: 'invoiceTerm',
+  contractStart: 'contractStart',
+  contractEnd: 'contractEnd',
+  crmDealId: 'crmDealId',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  stripePriceId: 'stripePriceId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -155,6 +221,7 @@ export const CompanyUserScalarFieldEnum = {
   companyId: 'companyId',
   userId: 'userId',
   role: 'role',
+  onboardingStep: 'onboardingStep',
   createdAt: 'createdAt'
 } as const
 
@@ -181,6 +248,7 @@ export const PlanScalarFieldEnum = {
   monthlyEventLimit: 'monthlyEventLimit',
   retentionDays: 'retentionDays',
   priceCents: 'priceCents',
+  tier: 'tier',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -534,6 +602,34 @@ export const EventSchemaScalarFieldEnum = {
 } as const
 
 export type EventSchemaScalarFieldEnum = (typeof EventSchemaScalarFieldEnum)[keyof typeof EventSchemaScalarFieldEnum]
+
+
+export const InternalUserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  password: 'password',
+  name: 'name',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InternalUserScalarFieldEnum = (typeof InternalUserScalarFieldEnum)[keyof typeof InternalUserScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  internalUserId: 'internalUserId',
+  action: 'action',
+  targetUserId: 'targetUserId',
+  targetCompanyId: 'targetCompanyId',
+  metadata: 'metadata',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
 export const SortOrder = {

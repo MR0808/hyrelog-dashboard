@@ -23,6 +23,21 @@ export * from './enums';
  */
 export type User = Prisma.UserModel
 /**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Account
+ * 
+ */
+export type Account = Prisma.AccountModel
+/**
+ * Model Verification
+ * 
+ */
+export type Verification = Prisma.VerificationModel
+/**
  * Model Company
  * 
  */
@@ -162,3 +177,13 @@ export type PendingWrite = Prisma.PendingWriteModel
  * 
  */
 export type EventSchema = Prisma.EventSchemaModel
+/**
+ * Model InternalUser
+ * 
+ */
+export type InternalUser = Prisma.InternalUserModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

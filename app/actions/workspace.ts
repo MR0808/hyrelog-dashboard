@@ -80,8 +80,8 @@ export async function createWorkspace(formData: FormData) {
       },
     });
     
-    revalidatePath('/onboarding');
-    revalidatePath('/workspaces');
+    // Note: revalidatePath removed - cannot be called during Server Component render
+    // The page will refresh naturally on navigation
     
     return {
       success: true,

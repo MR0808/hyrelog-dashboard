@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCheckoutSession } from '@/app/actions/stripe';
+import { FancyButton } from '@/components/ui/fancy-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -73,35 +74,50 @@ export function PlanSelection({ plans }: PlanSelectionProps) {
       : `$${monthly.toFixed(0)}/month`;
   };
 
+  const getMonthlyEquivalent = (cents: number) => {
+    if (cents === 0) return null;
+    const annual = (cents * 12 * 0.85) / 100;
+    return Math.round(annual / 12);
+  };
+
   return (
     <div className="space-y-6">
       {/* Billing Cycle Toggle */}
       {selfServePlans.some((p) => p.priceCents > 0) && (
-        <div className="flex justify-center">
-          <div className="inline-flex rounded-lg border p-1">
-            <button
-              type="button"
-              onClick={() => setBillingCycle('MONTHLY')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                billingCycle === 'MONTHLY'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle('ANNUAL')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                billingCycle === 'ANNUAL'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Annual <span className="text-xs">(15% off)</span>
-            </button>
-          </div>
+        <div className="flex items-center justify-center gap-4">
+          <span className={`text-sm font-medium transition-colors ${
+            billingCycle === 'MONTHLY' ? 'text-foreground' : 'text-muted-foreground'
+          }`}>
+            Monthly
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={billingCycle === 'ANNUAL'}
+            onClick={() => setBillingCycle(billingCycle === 'MONTHLY' ? 'ANNUAL' : 'MONTHLY')}
+            className={`
+              relative inline-flex h-7 w-14 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent 
+              transition-colors duration-200 ease-in-out focus-visible:outline-none 
+              focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+              ${billingCycle === 'ANNUAL' 
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600' 
+                : 'bg-gray-300 dark:bg-gray-700'
+              }
+            `}
+          >
+            <span
+              className={`
+                pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg 
+                ring-0 transition duration-200 ease-in-out
+                ${billingCycle === 'ANNUAL' ? 'translate-x-7' : 'translate-x-0.5'}
+              `}
+            />
+          </button>
+          <span className={`text-sm font-medium transition-colors ${
+            billingCycle === 'ANNUAL' ? 'text-foreground' : 'text-muted-foreground'
+          }`}>
+            Annual <span className="text-xs text-muted-foreground">(15% off)</span>
+          </span>
         </div>
       )}
 
@@ -110,48 +126,51 @@ export function PlanSelection({ plans }: PlanSelectionProps) {
         {selfServePlans.map((plan) => {
           const isSelected = selectedPlan === plan.id;
           const isFree = plan.priceCents === 0;
+          const monthlyEquivalent = getMonthlyEquivalent(plan.priceCents);
 
           return (
             <Card
               key={plan.id}
-              className={`cursor-pointer transition-all ${
+              className={`flex flex-col cursor-pointer transition-all h-full ${
                 isSelected ? 'ring-2 ring-primary' : ''
               }`}
               onClick={() => setSelectedPlan(plan.id)}
             >
-              <CardHeader>
+              <CardHeader className="flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{plan.name}</CardTitle>
-                  {isSelected && <Check className="h-5 w-5 text-primary" />}
+                  {isSelected && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
                 </div>
-                <CardDescription>{plan.description}</CardDescription>
+                <CardDescription className="min-h-[3rem]">{plan.description}</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="text-3xl font-bold">{formatPrice(plan.priceCents)}</div>
-                  {billingCycle === 'ANNUAL' && plan.priceCents > 0 && (
-                    <div className="text-sm text-muted-foreground">
-                      ${((plan.priceCents / 100) * 0.85 / 12).toFixed(0)}/month billed annually
-                    </div>
-                  )}
+              <CardContent className="flex flex-col flex-grow space-y-4">
+                <div className="h-[4.5rem] flex flex-col justify-start">
+                  <div className="text-3xl font-bold leading-tight">{formatPrice(plan.priceCents)}</div>
+                  <div className="text-sm text-muted-foreground h-[1.25rem] flex items-start">
+                    {billingCycle === 'ANNUAL' && plan.priceCents > 0 && monthlyEquivalent
+                      ? `$${monthlyEquivalent}/month billed annually`
+                      : '\u00A0'}
+                  </div>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary" />
+                <div className="space-y-2 flex-grow">
+                  <div className="flex items-center gap-2 text-sm min-h-[1.5rem]">
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
                     <span>{plan.monthlyEventLimit.toLocaleString()} events/month</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary" />
+                  <div className="flex items-center gap-2 text-sm min-h-[1.5rem]">
+                    <Check className="h-4 w-4 text-primary flex-shrink-0" />
                     <span>{plan.retentionDays} days retention</span>
                   </div>
                 </div>
 
-                {plan.tier === 'FREE' && (
-                  <Badge variant="secondary" className="w-full justify-center">
-                    Perfect for getting started
-                  </Badge>
-                )}
+                <div className="min-h-[2rem] flex items-center">
+                  {plan.tier === 'FREE' && (
+                    <Badge variant="secondary" className="w-full justify-center">
+                      Perfect for getting started
+                    </Badge>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
@@ -181,16 +200,27 @@ export function PlanSelection({ plans }: PlanSelectionProps) {
 
       {/* Navigation */}
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" asChild disabled={isPending}>
+        <FancyButton 
+          type="button" 
+          variant="outline" 
+          asChild 
+          disabled={isPending}
+          icon={<ArrowLeft className="h-4 w-4" />}
+          iconPosition="left"
+        >
           <Link href="/onboarding/company">
-            <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Link>
-        </Button>
-        <Button onClick={handleContinue} disabled={isPending || !selectedPlan}>
+        </FancyButton>
+        <FancyButton 
+          onClick={handleContinue} 
+          disabled={isPending || !selectedPlan}
+          variant="primary"
+          icon={<ArrowRight className="h-4 w-4" />}
+          iconPosition="right"
+        >
           {isPending ? 'Processing...' : 'Continue'}
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+        </FancyButton>
       </div>
     </div>
   );

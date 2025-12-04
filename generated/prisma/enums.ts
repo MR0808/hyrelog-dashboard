@@ -105,6 +105,58 @@ export const AddOnCode = {
 export type AddOnCode = (typeof AddOnCode)[keyof typeof AddOnCode]
 
 
+export const BillingMode = {
+  STRIPE: 'STRIPE',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type BillingMode = (typeof BillingMode)[keyof typeof BillingMode]
+
+
+export const InvoiceTerm = {
+  NET_30: 'NET_30',
+  NET_60: 'NET_60',
+  MANUAL: 'MANUAL'
+} as const
+
+export type InvoiceTerm = (typeof InvoiceTerm)[keyof typeof InvoiceTerm]
+
+
+export const PlanTier = {
+  FREE: 'FREE',
+  STARTER: 'STARTER',
+  GROWTH: 'GROWTH',
+  SCALE: 'SCALE',
+  ENTERPRISE: 'ENTERPRISE'
+} as const
+
+export type PlanTier = (typeof PlanTier)[keyof typeof PlanTier]
+
+
+export const OnboardingStep = {
+  START: 'START',
+  COMPANY: 'COMPANY',
+  PLAN: 'PLAN',
+  BILLING: 'BILLING',
+  WORKSPACE: 'WORKSPACE',
+  API_KEY: 'API_KEY',
+  SEND_EVENT: 'SEND_EVENT',
+  COMPLETE: 'COMPLETE'
+} as const
+
+export type OnboardingStep = (typeof OnboardingStep)[keyof typeof OnboardingStep]
+
+
+export const InternalUserRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  SALES_ADMIN: 'SALES_ADMIN',
+  SUPPORT_ADMIN: 'SUPPORT_ADMIN',
+  BILLING_ADMIN: 'BILLING_ADMIN'
+} as const
+
+export type InternalUserRole = (typeof InternalUserRole)[keyof typeof InternalUserRole]
+
+
 export const JobType = {
   GDPR_EXPORT: 'GDPR_EXPORT'
 } as const

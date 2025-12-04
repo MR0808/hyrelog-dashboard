@@ -48,6 +48,17 @@ export async function createCheckoutSession(
 ) {
   try {
     const session = await requireAuth();
+    
+    // Ensure company cookie is set
+    const { ensureCompanyCookie } = await import('@/app/actions/company-context');
+    const cookieResult = await ensureCompanyCookie();
+    if (!cookieResult.success) {
+      return {
+        success: false,
+        error: cookieResult.error || 'No company available',
+      };
+    }
+    
     const companyId = await getSelectedCompanyId();
 
     if (!companyId) {
@@ -173,12 +184,21 @@ export async function verifyStripeSubscription(sessionId: string) {
   try {
     const session = await requireAuth();
     
+    console.log('Verifying Stripe subscription:', sessionId);
+    
     const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
     
+    console.log('Checkout session status:', {
+      payment_status: checkoutSession.payment_status,
+      status: checkoutSession.status,
+      metadata: checkoutSession.metadata,
+    });
+    
     if (checkoutSession.payment_status !== 'paid') {
+      console.error('Payment not completed:', checkoutSession.payment_status);
       return {
         success: false,
-        error: 'Payment not completed',
+        error: `Payment status: ${checkoutSession.payment_status}`,
       };
     }
 
@@ -187,6 +207,7 @@ export async function verifyStripeSubscription(sessionId: string) {
     const billingCycle = checkoutSession.metadata?.billingCycle as 'MONTHLY' | 'ANNUAL';
 
     if (!companyId || !planId) {
+      console.error('Missing metadata:', { companyId, planId, metadata: checkoutSession.metadata });
       return {
         success: false,
         error: 'Invalid session metadata',
@@ -202,6 +223,7 @@ export async function verifyStripeSubscription(sessionId: string) {
     });
 
     if (!companyUser) {
+      console.error('Access denied for user:', { userId: session.user.id, companyId });
       return {
         success: false,
         error: 'Access denied',
@@ -210,12 +232,22 @@ export async function verifyStripeSubscription(sessionId: string) {
 
     // Get subscription details
     const subscriptionId = checkoutSession.subscription as string;
+    if (!subscriptionId) {
+      console.error('No subscription ID in checkout session');
+      return {
+        success: false,
+        error: 'No subscription found',
+      };
+    }
+    
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
     // Create or update company plan
     const now = new Date();
     const periodEnd = new Date(subscription.current_period_end * 1000);
 
+    console.log('Creating/updating company plan:', { companyId, planId, billingCycle });
+    
     await prisma.companyPlan.upsert({
       where: { companyId },
       create: {
@@ -244,6 +276,7 @@ export async function verifyStripeSubscription(sessionId: string) {
       },
     });
 
+    console.log('Subscription verified successfully');
     return {
       success: true,
     };

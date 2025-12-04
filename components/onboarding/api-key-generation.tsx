@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createApiKey } from '@/app/actions/api-keys';
 import { updateOnboardingStep } from '@/app/actions/onboarding';
+import { FancyButton } from '@/components/ui/fancy-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -65,11 +66,18 @@ export function ApiKeyGeneration({ companyId, workspaces }: ApiKeyGenerationProp
     });
   };
 
-  const handleCopy = async () => {
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (apiKey) {
-      await navigator.clipboard.writeText(apiKey);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(apiKey);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (error) {
+        console.error('Failed to copy:', error);
+      }
     }
   };
 
@@ -93,10 +101,12 @@ export function ApiKeyGeneration({ companyId, workspaces }: ApiKeyGenerationProp
                   {apiKey}
                 </div>
                 <Button
+                  type="button"
                   size="sm"
                   variant="ghost"
                   className="absolute right-2 top-2"
                   onClick={handleCopy}
+                  onMouseDown={(e) => e.preventDefault()}
                 >
                   {copied ? (
                     <Check className="h-4 w-4" />
@@ -109,10 +119,14 @@ export function ApiKeyGeneration({ companyId, workspaces }: ApiKeyGenerationProp
           </Alert>
 
           <div className="flex justify-end pt-4">
-            <Button onClick={handleContinue}>
+            <FancyButton 
+              onClick={handleContinue}
+              variant="primary"
+              icon={<ArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+            >
               Continue
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </FancyButton>
           </div>
         </CardContent>
       </Card>
@@ -188,16 +202,27 @@ export function ApiKeyGeneration({ companyId, workspaces }: ApiKeyGenerationProp
           )}
 
           <div className="flex justify-between pt-4">
-            <Button type="button" variant="outline" asChild disabled={isPending}>
+            <FancyButton 
+              type="button" 
+              variant="outline" 
+              asChild 
+              disabled={isPending}
+              icon={<ArrowLeft className="h-4 w-4" />}
+              iconPosition="left"
+            >
               <Link href="/onboarding/workspace">
-                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Link>
-            </Button>
-            <Button type="submit" disabled={isPending || !name}>
+            </FancyButton>
+            <FancyButton 
+              type="submit" 
+              disabled={isPending || !name}
+              variant="primary"
+              icon={<ArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+            >
               {isPending ? 'Generating...' : 'Generate API Key'}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </FancyButton>
           </div>
         </form>
       </CardContent>

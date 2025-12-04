@@ -9,6 +9,9 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User'
+export type * from './models/Session'
+export type * from './models/Account'
+export type * from './models/Verification'
 export type * from './models/Company'
 export type * from './models/Workspace'
 export type * from './models/Project'
@@ -37,4 +40,6 @@ export type * from './models/GdprRequest'
 export type * from './models/GdprRequestApproval'
 export type * from './models/PendingWrite'
 export type * from './models/EventSchema'
+export type * from './models/InternalUser'
+export type * from './models/AuditLog'
 export type * from './commonInputTypes'

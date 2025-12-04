@@ -540,14 +540,6 @@ export type WorkspaceUncheckedUpdateManyWithoutCompanyNestedInput = {
   deleteMany?: Prisma.WorkspaceScalarWhereInput | Prisma.WorkspaceScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type WorkspaceCreateNestedOneWithoutProjectsInput = {
   create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutProjectsInput, Prisma.WorkspaceUncheckedCreateWithoutProjectsInput>
   connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutProjectsInput

@@ -835,10 +835,6 @@ export type EnumApiKeyTypeFieldUpdateOperationsInput = {
   set?: $Enums.ApiKeyType
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ApiKeyUpdatelabelsInput = {
   set?: string[]
   push?: string | string[]

@@ -29,16 +29,49 @@ export default async function OnboardingPlanPage() {
     },
   });
   
-  if (company?.plans) {
+  if (company?.plans && company.plans.length > 0) {
     redirect('/onboarding/workspace');
   }
   
   // If not at plan step, redirect appropriately
-  if (currentStep && currentStep !== 'company' && currentStep !== 'plan') {
+  if (currentStep && currentStep !== 'company' && currentStep !== 'plan' && currentStep !== 'start') {
     redirect(`/onboarding/${currentStep}`);
   }
   
-  const plans = await getAvailablePlans();
+  let plans;
+  try {
+    plans = await getAvailablePlans();
+  } catch (error) {
+    console.error('Error loading plans:', error);
+    // If plans fail to load, show error message instead of redirecting
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md text-center space-y-4">
+          <h1 className="text-2xl font-bold text-destructive">No Plans Available</h1>
+          <p className="text-muted-foreground">
+            Plans need to be seeded in the database. Please run the seed script in the backend repository.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Error: {error instanceof Error ? error.message : 'Unknown error'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
+  // If no plans available, show message
+  if (!plans || plans.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md text-center space-y-4">
+          <h1 className="text-2xl font-bold">No Plans Available</h1>
+          <p className="text-muted-foreground">
+            Plans need to be seeded in the database. Please run the seed script in the backend repository.
+          </p>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createCompany } from '@/app/actions/company';
+import { FancyButton } from '@/components/ui/fancy-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -111,16 +112,27 @@ export function CreateCompanyForm() {
           </div>
 
           <div className="flex justify-between pt-4">
-            <Button type="button" variant="outline" asChild disabled={isPending}>
+            <FancyButton 
+              type="button" 
+              variant="outline" 
+              asChild 
+              disabled={isPending}
+              icon={<ArrowLeft className="h-4 w-4" />}
+              iconPosition="left"
+            >
               <Link href="/onboarding/start">
-                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
               </Link>
-            </Button>
-            <Button type="submit" disabled={isPending || !name}>
+            </FancyButton>
+            <FancyButton 
+              type="submit" 
+              disabled={isPending || !name}
+              variant="primary"
+              icon={<ArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+            >
               {isPending ? 'Creating...' : 'Continue'}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </FancyButton>
           </div>
         </form>
       </CardContent>

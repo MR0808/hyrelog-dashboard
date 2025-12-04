@@ -3,7 +3,7 @@ import { requireAuth } from '@/lib/auth-server';
 import { getCurrentOnboardingStep, updateOnboardingStep } from '@/app/actions/onboarding';
 import { getUserCompanies } from '@/lib/permissions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { FancyButton } from '@/components/ui/fancy-button';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -64,12 +64,17 @@ export default async function OnboardingCompletePage() {
           </div>
           
           <div className="flex justify-center pt-4">
-            <Button asChild size="lg">
+            <FancyButton 
+              asChild 
+              size="md"
+              variant="primary"
+              icon={<ArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+            >
               <Link href="/overview">
                 Go to Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
+            </FancyButton>
           </div>
         </CardContent>
       </Card>
