@@ -9,10 +9,14 @@ import { ApiKeyType } from '@/generated/prisma/enums';
 import crypto from 'node:crypto';
 
 /**
- * Hash API key (same logic as backend)
+ * Hash API key (same logic as backend - must use HMAC with secret)
  */
 function hashApiKey(key: string): string {
-  return crypto.createHash('sha256').update(key).digest('hex');
+  const secret = process.env.API_KEY_SECRET;
+  if (!secret) {
+    throw new Error('API_KEY_SECRET environment variable is required');
+  }
+  return crypto.createHmac('sha256', secret).update(key).digest('hex');
 }
 
 /**
