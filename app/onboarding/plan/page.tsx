@@ -37,7 +37,7 @@ export default async function OnboardingPlanPage() {
         }
     });
 
-    if (company?.plans && company.plans.length > 0) {
+    if (company?.plans) {
         redirect('/onboarding/workspace');
     }
 
