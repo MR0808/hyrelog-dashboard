@@ -7,10 +7,21 @@
  * - Platform role for admin
  */
 
-import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcryptjs';
+import 'dotenv/config';
+import { PrismaClient } from '../generated/prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
-const prisma = new PrismaClient();
+// Prisma 7: Create adapter for direct database connection
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   console.log('🌱 Seeding dashboard database...');
@@ -20,8 +31,11 @@ async function main() {
   const customerEmail = 'customer@hyrelog.local';
   const customerPassword = 'ChangeMe123!';
 
+  // Note: better-auth handles password hashing, so we create users without passwords
+  // Users will need to sign up via the UI or we can use better-auth's admin API
+  // For now, create users and note that passwords must be set via sign-up or admin API
+
   // Create HyreLog admin user
-  const hashedAdminPassword = await hash(adminPassword, 10);
   const adminUser = await prisma.user.upsert({
     where: { email: adminEmail },
     update: {},
@@ -44,11 +58,10 @@ async function main() {
 
   console.log(`✅ Created admin user: ${adminEmail}`);
   console.log(`   User ID: ${adminUser.id}`);
-  console.log(`   Password: ${adminPassword}`);
   console.log(`   Platform Role: HYRELOG_ADMIN`);
+  console.log(`   Note: Sign up via /login to set password: ${adminPassword}`);
 
   // Create customer user
-  const hashedCustomerPassword = await hash(customerPassword, 10);
   const customerUser = await prisma.user.upsert({
     where: { email: customerEmail },
     update: {},
@@ -61,14 +74,15 @@ async function main() {
 
   console.log(`✅ Created customer user: ${customerEmail}`);
   console.log(`   User ID: ${customerUser.id}`);
-  console.log(`   Password: ${customerPassword}`);
+  console.log(`   Note: Sign up via /login to set password: ${customerPassword}`);
   console.log(`   Note: No company membership yet - attach via admin page`);
 
   console.log('\n✨ Seeding complete!');
   console.log('\n📝 Next steps:');
-  console.log('1. Login as admin and navigate to /admin/companies');
-  console.log('2. Find or create a company in the API');
-  console.log('3. Use the admin page to attach company membership to customer user');
+  console.log('1. Sign up via /login for both users (better-auth will hash passwords)');
+  console.log('2. Login as admin and navigate to /admin/companies');
+  console.log('3. Find or create a company in the API');
+  console.log('4. Use the admin page to attach company membership to customer user');
 }
 
 main()
