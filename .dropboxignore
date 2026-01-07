@@ -1,0 +1,8 @@
+# Dropbox ignore file
+# Exclude Next.js build directory from Dropbox sync to prevent file locking issues
+
+.next/
+node_modules/
+.env
+.env.local
+.env*.local

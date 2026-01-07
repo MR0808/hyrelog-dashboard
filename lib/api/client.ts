@@ -48,7 +48,7 @@ async function apiRequest<T>(
   const { method = 'GET', body, companyId: overrideCompanyId, requireCompany = true } = options;
 
   const authContext = await getAuthContext();
-  const selectedCompanyId = getSelectedCompanyId();
+  const selectedCompanyId = await getSelectedCompanyId();
   const finalCompanyId = overrideCompanyId || selectedCompanyId || authContext.companyId;
 
   if (requireCompany && !finalCompanyId) {
@@ -98,6 +98,25 @@ async function apiRequest<T>(
  */
 export const apiClient = {
   // Company
+  createCompany: (body: {
+    name: string;
+    dataRegion: 'US' | 'EU' | 'APAC';
+    companySize?: string;
+    industry?: string;
+    useCase?: string;
+  }) =>
+    apiRequest<{
+      id: string;
+      name: string;
+      dataRegion: string;
+      planTier: string;
+      createdAt: string;
+    }>(`/dashboard/companies`, {
+      method: 'POST',
+      body,
+      requireCompany: false, // No company yet when creating
+    }),
+
   getCompany: (companyId: string) =>
     apiRequest<{
       id: string;

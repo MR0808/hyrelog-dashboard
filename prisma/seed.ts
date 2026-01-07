@@ -23,7 +23,62 @@ const adapter = new PrismaPg(pool);
 
 const prisma = new PrismaClient({ adapter });
 
+/**
+ * Clear all data from the dashboard database
+ * Deletes in order to respect foreign key constraints
+ */
+async function resetDatabase() {
+  console.log('🗑️  Resetting dashboard database...');
+  
+  // Delete in order to respect foreign key constraints
+  await prisma.auditLog.deleteMany({});
+  console.log('  ✓ Cleared audit logs');
+  
+  await prisma.companyInvite.deleteMany({});
+  console.log('  ✓ Cleared company invites');
+  
+  await prisma.emailVerificationToken.deleteMany({});
+  console.log('  ✓ Cleared email verification tokens');
+  
+  await prisma.companyMembership.deleteMany({});
+  console.log('  ✓ Cleared company memberships');
+  
+  // Note: Company deletion should be handled by API database
+  // We only manage company memberships in dashboard DB
+  
+  await prisma.platformRole.deleteMany({});
+  console.log('  ✓ Cleared platform roles');
+  
+  await prisma.session.deleteMany({});
+  console.log('  ✓ Cleared sessions');
+  
+  await prisma.account.deleteMany({});
+  console.log('  ✓ Cleared accounts');
+  
+  await prisma.verificationToken.deleteMany({});
+  console.log('  ✓ Cleared verification tokens');
+  
+  await prisma.user.deleteMany({});
+  console.log('  ✓ Cleared users');
+  
+  console.log('✅ Database reset complete!\n');
+}
+
 async function main() {
+  // Check for --reset flag
+  const args = process.argv.slice(2);
+  const shouldReset = args.includes('--reset') || args.includes('-r');
+  
+  if (shouldReset) {
+    console.log('⚠️  WARNING: This will delete ALL data from the dashboard database!');
+    console.log('   Press Ctrl+C to cancel, or wait 3 seconds to continue...\n');
+    
+    // Give user 3 seconds to cancel
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    await resetDatabase();
+  }
+  
   console.log('🌱 Seeding dashboard database...');
 
   const adminEmail = process.env.SEED_ADMIN_EMAIL || 'admin@hyrelog.local';
@@ -31,20 +86,41 @@ async function main() {
   const customerEmail = 'customer@hyrelog.local';
   const customerPassword = 'ChangeMe123!';
 
-  // Note: better-auth handles password hashing, so we create users without passwords
-  // Users will need to sign up via the UI or we can use better-auth's admin API
-  // For now, create users and note that passwords must be set via sign-up or admin API
+  // Better-auth stores passwords in Account table with provider "credential"
+  // We need to hash passwords using the same method better-auth uses
+  // For now, create users and Account records manually
+  // Note: This is a workaround - ideally we'd use better-auth's API
 
-  // Create HyreLog admin user
-  const adminUser = await prisma.user.upsert({
+  // Create or get HyreLog admin user
+  let adminUser = await prisma.user.findUnique({
     where: { email: adminEmail },
-    update: {},
-    create: {
-      email: adminEmail,
-      name: 'HyreLog Admin',
-      emailVerified: true,
-    },
   });
+
+  if (!adminUser) {
+    adminUser = await prisma.user.create({
+      data: {
+        email: adminEmail,
+        name: 'HyreLog Admin',
+        firstName: 'HyreLog',
+        lastName: 'Admin',
+        emailVerified: true,
+        emailVerifiedAt: new Date(),
+        status: 'ACTIVE',
+      },
+    });
+  } else {
+    // Update existing admin user to ensure required fields
+    adminUser = await prisma.user.update({
+      where: { id: adminUser.id },
+      data: {
+        firstName: adminUser.firstName || 'HyreLog',
+        lastName: adminUser.lastName || 'Admin',
+        emailVerified: true,
+        emailVerifiedAt: adminUser.emailVerifiedAt || new Date(),
+        status: 'ACTIVE',
+      },
+    });
+  }
 
   // Create platform role for admin
   await prisma.platformRole.upsert({
@@ -56,33 +132,83 @@ async function main() {
     },
   });
 
-  console.log(`✅ Created admin user: ${adminEmail}`);
-  console.log(`   User ID: ${adminUser.id}`);
-  console.log(`   Platform Role: HYRELOG_ADMIN`);
-  console.log(`   Note: Sign up via /login to set password: ${adminPassword}`);
-
-  // Create customer user
-  const customerUser = await prisma.user.upsert({
-    where: { email: customerEmail },
-    update: {},
-    create: {
-      email: customerEmail,
-      name: 'Customer User',
-      emailVerified: true,
+  // Create Account record for admin (better-auth stores password here)
+  // Note: We'll need to use better-auth's password hashing
+  // For now, users should sign up via /signup to set passwords properly
+  const adminAccount = await prisma.account.findFirst({
+    where: {
+      userId: adminUser.id,
+      provider: 'credential',
     },
   });
 
+  if (!adminAccount) {
+    console.log(`⚠️  Admin user created but password not set.`);
+    console.log(`   Please sign up at /signup with email: ${adminEmail}`);
+    console.log(`   Password: ${adminPassword}`);
+  }
+
+  console.log(`✅ Created admin user: ${adminEmail}`);
+  console.log(`   User ID: ${adminUser.id}`);
+  console.log(`   Platform Role: HYRELOG_ADMIN`);
+
+  // Create or get customer user
+  let customerUser = await prisma.user.findUnique({
+    where: { email: customerEmail },
+  });
+
+  if (!customerUser) {
+    customerUser = await prisma.user.create({
+      data: {
+        email: customerEmail,
+        name: 'Customer User',
+        firstName: 'Customer',
+        lastName: 'User',
+        emailVerified: true,
+        emailVerifiedAt: new Date(),
+        status: 'ACTIVE',
+      },
+    });
+  } else {
+    // Update existing customer user to ensure required fields
+    customerUser = await prisma.user.update({
+      where: { id: customerUser.id },
+      data: {
+        firstName: customerUser.firstName || 'Customer',
+        lastName: customerUser.lastName || 'User',
+        emailVerified: true,
+        emailVerifiedAt: customerUser.emailVerifiedAt || new Date(),
+        status: 'ACTIVE',
+      },
+    });
+  }
+
+  const customerAccount = await prisma.account.findFirst({
+    where: {
+      userId: customerUser.id,
+      provider: 'credential',
+    },
+  });
+
+  if (!customerAccount) {
+    console.log(`⚠️  Customer user created but password not set.`);
+    console.log(`   Please sign up at /signup with email: ${customerEmail}`);
+    console.log(`   Password: ${customerPassword}`);
+  }
+
   console.log(`✅ Created customer user: ${customerEmail}`);
   console.log(`   User ID: ${customerUser.id}`);
-  console.log(`   Note: Sign up via /login to set password: ${customerPassword}`);
-  console.log(`   Note: No company membership yet - attach via admin page`);
+  console.log(`   Email Verified: ${customerUser.emailVerified ? 'Yes' : 'No'}`);
 
   console.log('\n✨ Seeding complete!');
   console.log('\n📝 Next steps:');
-  console.log('1. Sign up via /login for both users (better-auth will hash passwords)');
-  console.log('2. Login as admin and navigate to /admin/companies');
-  console.log('3. Find or create a company in the API');
-  console.log('4. Use the admin page to attach company membership to customer user');
+  console.log('1. Sign up at /signup for both users to set passwords:');
+  console.log(`   - Admin: ${adminEmail} / ${adminPassword}`);
+  console.log(`   - Customer: ${customerEmail} / ${customerPassword}`);
+  console.log('2. After signup, verify email (check console for verification link in dev mode)');
+  console.log('3. Login and create a company at /create-company');
+  console.log('4. As company admin, invite other users at /app/settings/members');
+  console.log('\n💡 Note: In dev mode, email links are logged to console for easy testing');
 }
 
 main()

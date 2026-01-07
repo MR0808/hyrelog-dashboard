@@ -69,3 +69,8 @@ export type CompanyMembership = Prisma.CompanyMembershipModel
  * 
  */
 export type PlatformRole = Prisma.PlatformRoleModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel

@@ -6,7 +6,7 @@
 
 import { auth } from './auth';
 import { prisma } from './db';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export interface AuthContext {
@@ -24,16 +24,16 @@ export interface AuthContext {
 /**
  * Get selected company ID from cookie
  */
-export function getSelectedCompanyId(): string | undefined {
-  const cookieStore = cookies();
+export async function getSelectedCompanyId(): Promise<string | undefined> {
+  const cookieStore = await cookies();
   return cookieStore.get('selectedCompanyId')?.value;
 }
 
 /**
  * Set selected company ID in cookie
  */
-export function setSelectedCompanyId(companyId: string) {
-  const cookieStore = cookies();
+export async function setSelectedCompanyId(companyId: string) {
+  const cookieStore = await cookies();
   cookieStore.set('selectedCompanyId', companyId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -47,11 +47,23 @@ export function setSelectedCompanyId(companyId: string) {
  */
 export async function getAuthContext(): Promise<AuthContext> {
   // Get session from better-auth
-  // For Next.js App Router, we need to get headers from the request
-  const headersList = headers();
+  // Next.js 16: Use cookies() and convert to cookie header string
+  const cookieStore = await cookies();
+  
+  // Build cookie header string from cookies
+  const cookiePairs: string[] = [];
+  cookieStore.getAll().forEach((cookie) => {
+    cookiePairs.push(`${cookie.name}=${cookie.value}`);
+  });
+  const cookieHeader = cookiePairs.join('; ');
+  
+  const headersObj: Record<string, string> = {};
+  if (cookieHeader) {
+    headersObj['cookie'] = cookieHeader;
+  }
   
   const session = await auth.api.getSession({
-    headers: headersList,
+    headers: headersObj,
   });
 
   if (!session?.user) {
@@ -71,7 +83,17 @@ export async function getAuthContext(): Promise<AuthContext> {
     redirect('/login');
   }
 
-  const selectedCompanyId = getSelectedCompanyId();
+  // Check email verification - unverified users can only see verification page
+  if (!user.emailVerified) {
+    // Allow access to verification pages
+    const headersList = await headers();
+    const pathname = headersList.get('x-pathname') || '';
+    if (!pathname.startsWith('/verify-email') && pathname !== '/verify-email-sent') {
+      redirect('/verify-email-sent');
+    }
+  }
+
+  const selectedCompanyId = await getSelectedCompanyId();
   const membership = selectedCompanyId
     ? user.companyMemberships.find((m) => m.companyId === selectedCompanyId)
     : user.companyMemberships[0];

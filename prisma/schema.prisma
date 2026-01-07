@@ -15,20 +15,32 @@ datasource db {
 // Better Auth Models (required by better-auth adapter)
 // ============================================================
 
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
 model User {
-  id            String   @id @default(uuid())
-  name          String?
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id              String      @id @default(uuid())
+  name            String?     // Full name (for better-auth compatibility)
+  firstName       String       // Required
+  lastName        String       // Required
+  email           String      @unique
+  emailVerified   Boolean      @default(false)
+  emailVerifiedAt DateTime?    // Timestamp when email was verified
+  status          UserStatus   @default(ACTIVE)
+  image           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   // Relations
   sessions           Session[]
   accounts           Account[]
   companyMemberships CompanyMembership[]
   platformRole       PlatformRole?
+  auditLogs          AuditLog[]
+  emailVerificationTokens EmailVerificationToken[]
+  companyInvites     CompanyInvite[]
 
   @@map("users")
 }
@@ -47,9 +59,10 @@ model Session {
 model Account {
   id                String  @id @default(uuid())
   userId            String
-  type              String
-  provider          String
-  providerAccountId String
+  type              String  @default("credential") // Default for email/password auth
+  provider          String  @default("credential") // Default for email/password auth
+  providerAccountId String  @default("") // Required: usually the user's email for credential provider (better-auth should provide this)
+  password          String? // Password hash for email/password auth (better-auth stores this)
   refresh_token     String? @db.Text
   access_token      String? @db.Text
   expires_at        Int?
@@ -74,9 +87,73 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
+// Email verification tokens (separate from better-auth's VerificationToken)
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique // Hashed token, never store raw
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
+}
+
 // ============================================================
 // Dashboard-Specific Models
 // ============================================================
+
+enum DataRegion {
+  US
+  EU
+  APAC
+}
+
+enum PlanTier {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+  CUSTOM
+}
+
+enum BillingStatus {
+  ACTIVE
+  PAST_DUE
+  SUSPENDED
+}
+
+model Company {
+  id                  String         @id @default(uuid())
+  name                String
+  dataRegion          DataRegion     @default(US)
+  planTier            PlanTier       @default(FREE)
+  planOverrides       Json?          // Custom plan overrides
+  stripeCustomerId    String?        @unique
+  stripeSubscriptionId String?       @unique
+  billingStatus       BillingStatus  @default(ACTIVE)
+  billingGraceEndsAt  DateTime?
+  companySize         String?        // Optional progressive profiling
+  industry            String?        // Optional progressive profiling
+  useCase             String?        // Optional progressive profiling
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  // Relations
+  memberships CompanyMembership[]
+  invites     CompanyInvite[]
+  auditLogs   AuditLog[]
+
+  @@index([dataRegion])
+  @@index([planTier])
+  @@index([billingStatus])
+  @@map("companies")
+}
 
 enum CompanyMembershipRole {
   COMPANY_ADMIN
@@ -92,12 +169,35 @@ model CompanyMembership {
   updatedAt DateTime              @updatedAt
 
   // Relations
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([userId, companyId])
   @@index([userId])
   @@index([companyId])
   @@map("company_memberships")
+}
+
+model CompanyInvite {
+  id            String                @id @default(uuid())
+  companyId     String
+  email         String
+  role          CompanyMembershipRole
+  tokenHash     String                 @unique // Hashed token, never store raw
+  expiresAt     DateTime
+  invitedByUserId String
+  acceptedAt    DateTime?
+  createdAt     DateTime               @default(now())
+
+  // Relations
+  company       Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invitedBy     User    @relation(fields: [invitedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([email])
+  @@index([tokenHash])
+  @@index([expiresAt])
+  @@map("company_invites")
 }
 
 enum PlatformRoleType {
@@ -116,4 +216,87 @@ model PlatformRole {
   @@index([userId])
   @@index([role])
   @@map("platform_roles")
+}
+
+// ============================================================
+// Audit Logging
+// ============================================================
+
+enum AuditAction {
+  // Authentication
+  USER_CREATED
+  USER_SIGNUP
+  USER_LOGIN
+  USER_LOGOUT
+  USER_PASSWORD_CHANGE
+  USER_EMAIL_VERIFIED
+  
+  // Company Management
+  COMPANY_CREATED
+  COMPANY_UPDATE
+  COMPANY_DELETE
+  COMPANY_PLAN_CHANGED
+  COMPANY_SUSPENDED
+  COMPANY_REACTIVATED
+  
+  // Member Management
+  MEMBER_INVITED
+  MEMBER_INVITE_ACCEPTED
+  COMPANY_MEMBER_ADD
+  COMPANY_MEMBER_REMOVE
+  COMPANY_MEMBER_UPDATE
+  
+  // Data Management
+  EXPORT_CREATE
+  EXPORT_DOWNLOAD
+  WEBHOOK_CREATE
+  WEBHOOK_UPDATE
+  WEBHOOK_DELETE
+  WEBHOOK_TRIGGER
+  RESTORE_REQUEST_CREATE
+  RESTORE_REQUEST_APPROVE
+  RESTORE_REQUEST_REJECT
+  GDPR_REQUEST_CREATE
+  GDPR_REQUEST_PROCESS
+  
+  // Billing
+  BILLING_PAYMENT_FAILED
+  BILLING_GRACE_STARTED
+  
+  // Admin Actions
+  ADMIN_USER_UPDATE
+  ADMIN_USER_DELETE
+  ADMIN_COMPANY_UPDATE
+  ADMIN_COMPANY_DELETE
+  ADMIN_PLAN_UPDATE
+  ADMIN_AUDIT_LOG_VIEW
+  
+  // System
+  SETTINGS_UPDATE
+  API_KEY_CREATE
+  API_KEY_DELETE
+}
+
+model AuditLog {
+  id          String      @id @default(uuid())
+  userId      String?     // Null for system actions
+  companyId   String?     // Null for user-level actions
+  action      AuditAction
+  resourceType String?    // e.g., "user", "company", "export"
+  resourceId  String?    // ID of the affected resource
+  details     Json?       // Additional context (IP, user agent, changes, etc.)
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+
+  // Relations
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

@@ -47,6 +47,12 @@ cp .env.example .env
 Edit `.env` and set:
 
 ```bash
+# Logging Configuration (Production)
+# Set to 'false' to disable console logging in production
+# Audit logs are ALWAYS written to database regardless of this setting
+ENABLE_CONSOLE_LOGS=false
+NEXT_PUBLIC_ENABLE_LOGS=false
+
 # API Configuration
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 
@@ -92,11 +98,26 @@ npm run db:generate
 
 ### Step 7: Seed Database
 
+**Normal seeding (safe, doesn't delete existing data):**
+
 ```bash
 npm run seed
 ```
 
-This creates:
+**Reset and seed (⚠️ WARNING: Deletes ALL data first):**
+
+```bash
+npm run seed -- --reset
+# or
+npm run seed -- -r
+```
+
+This will:
+- Delete all existing data (users, accounts, sessions, audit logs, etc.)
+- Wait 3 seconds for you to cancel (Ctrl+C)
+- Then create fresh seed data
+
+**What gets created:**
 - HyreLog admin user (from `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`)
 - Customer user (`customer@hyrelog.local` / `ChangeMe123!`)
 
