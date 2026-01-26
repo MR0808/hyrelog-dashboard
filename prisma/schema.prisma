@@ -1,0 +1,729 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// Better Auth + User Profile
+// ============================================================
+
+enum UserStatus {
+  ACTIVE
+  DEACTIVATED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  NOTSAY
+}
+
+model User {
+  id        String  @id @default(uuid())
+  // better-auth display name (can be derived from first/last)
+  name      String?
+  firstName String
+  lastName  String
+  email     String  @unique
+
+  emailVerified   Boolean    @default(false)
+  emailVerifiedAt DateTime?
+  status          UserStatus @default(ACTIVE)
+  image           String?
+
+  acceptTermsAt  DateTime?
+  marketingOptIn Boolean   @default(false)
+
+  // Optional profile fields
+  gender        Gender?
+  dateOfBirth   DateTime?
+  jobTitle      String?
+  phoneNumber   String?   @unique
+  phoneVerified Boolean   @default(false)
+  bio           String?
+  timezone      String? // IANA timezone
+  locale        String? // e.g. en-AU
+
+  // Geo preferences (safe deletes!)
+  countryId String?
+  regionId  String?
+
+  country Country? @relation(fields: [countryId], references: [id], onDelete: SetNull)
+  region  Region?  @relation(fields: [regionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Auth relations
+  sessions      Session[]
+  accounts      Account[]
+  verifications Verification[] // if your better-auth setup uses this
+
+  emailVerificationTokens EmailVerificationToken[]
+  emailChangeRecords      EmailChangeRecord[]
+  phoneChangeRecords      PhoneChangeRecord[]
+
+  // Platform/admin
+  platformRole PlatformRole?
+  auditLogs    AuditLog[]
+
+  // Tenancy / RBAC
+  companyMemberships   CompanyMember[]
+  workspaceMemberships WorkspaceMember[]
+
+  // Invites
+  invitesSent     Invite[] @relation("invitesSent")
+  invitesAccepted Invite[] @relation("invitesAccepted")
+
+  // Tracking (created companies)
+  companiesCreated Company[] @relation("CompanyCreatedBy")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expiresAt      DateTime
+  token          String   @unique
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// Some better-auth setups also use a Verification table:
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([identifier])
+  @@index([expiresAt])
+  @@index([userId])
+  @@map("verifications")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Optional: separate token lifecycle tracking for verification emails
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
+}
+
+model EmailChangeRecord {
+  id        String   @id @default(cuid())
+  email     String
+  newEmail  String   @map("new_email")
+  otp       String
+  expiresAt DateTime @map("expires_at")
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("email_change_records")
+}
+
+model PhoneChangeRecord {
+  id             String   @id @default(cuid())
+  phoneNumber    String?
+  newPhoneNumber String
+  otp            String
+  expiresAt      DateTime @map("expires_at")
+  attempts       Int      @default(0)
+  createdAt      DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([otp])
+  @@index([expiresAt])
+  @@map("phone_change_records")
+}
+
+// ============================================================
+// Platform Admin Roles
+// ============================================================
+
+enum PlatformRoleType {
+  HYRELOG_ADMIN
+  HYRELOG_SUPPORT
+}
+
+model PlatformRole {
+  id        String           @id @default(uuid())
+  userId    String           @unique
+  role      PlatformRoleType
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([role])
+  @@map("platform_roles")
+}
+
+// ============================================================
+// Geo + Currency Reference Data (kept for MVP)
+// ============================================================
+
+model Currency {
+  id           String    @id @default(cuid())
+  name         String    @unique
+  code         String    @unique // ISO 4217
+  symbol       String?
+  decimals     Int?
+  demonym      String?
+  majorSingle  String?
+  majorPlural  String?
+  ISOnum       Int?
+  symbolNative String
+  minorSingle  String?
+  minorPlural  String?
+  ISOdigits    Int?
+  numToBasic   Int?
+  countries    Country[]
+
+  @@map("currencies")
+}
+
+model Continent {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  countries Country[]
+
+  @@map("continents")
+}
+
+model Country {
+  id          String  @id @default(cuid())
+  isoCode     String  @unique // ISO 3166-1 alpha-2
+  isoCode3    String  @unique // ISO 3166-1 alpha-3
+  name        String
+  flag        String
+  latitude    Float
+  longitude   Float
+  currencyId  String
+  continentId String
+  phonePrefix String?
+
+  currency  Currency  @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  continent Continent @relation(fields: [continentId], references: [id], onDelete: Restrict)
+
+  regions Region[]
+  users   User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("countries")
+}
+
+model Region {
+  id        String @id @default(cuid())
+  code      String
+  name      String
+  countryId String
+
+  country Country @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  users   User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([countryId, code])
+  @@map("regions")
+}
+
+// ============================================================
+// Tenancy (dashboard control plane)
+// ============================================================
+
+enum DataRegion {
+  US
+  EU
+  APAC
+  UK
+  AU
+}
+
+model Company {
+  id              String     @id @default(uuid())
+  slug            String @unique
+  name            String
+  preferredRegion DataRegion @default(APAC)
+
+  // Link to API plane later (optional)
+  apiCompanyId String? @unique
+
+  createdByUserId String?
+  createdByUser   User?   @relation("CompanyCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  createdVia String @default("SELF_SERVE") // SELF_SERVE | SALES | ADMIN
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  workspaces   Workspace[]
+  members      CompanyMember[]
+  invites      Invite[]
+  subscription Subscription?
+  provisioning ApiProvisioning?
+  auditLogs    AuditLog[]
+  stripeEvents StripeEvent[]
+
+  @@index([apiCompanyId])
+  @@map("companies")
+}
+
+model Workspace {
+  id              String      @id @default(uuid())
+  companyId       String
+  name            String
+  slug            String @unique
+  preferredRegion DataRegion?
+
+  apiWorkspaceId String? @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  company Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  members WorkspaceMember[]
+  invites Invite[]
+
+  @@index([companyId])
+  @@index([apiWorkspaceId])
+  @@map("workspaces")
+}
+
+// ============================================================
+// RBAC (MVP: Company + Workspace)
+// ============================================================
+
+enum CompanyRole {
+  OWNER
+  ADMIN
+  BILLING
+  MEMBER
+}
+
+enum WorkspaceRole {
+  ADMIN
+  WRITER
+  READER
+}
+
+model CompanyMember {
+  id        String      @id @default(uuid())
+  userId    String
+  companyId String
+  role      CompanyRole @default(MEMBER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, companyId])
+  @@index([companyId])
+  @@index([userId])
+  @@map("company_members")
+}
+
+model WorkspaceMember {
+  id          String        @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        WorkspaceRole @default(READER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+  @@index([userId])
+  @@map("workspace_members")
+}
+
+// ============================================================
+// Invites (Company scope + optional workspace scope)
+// ============================================================
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+enum InviteScope {
+  COMPANY
+  WORKSPACE
+}
+
+model Invite {
+  id     String       @id @default(uuid())
+  email  String
+  status InviteStatus @default(PENDING)
+
+  scope InviteScope @default(COMPANY)
+
+  tokenHash String   @unique
+  expiresAt DateTime
+
+  companyId   String
+  workspaceId String?
+
+  // Only set when status=PENDING; null otherwise
+  pendingKey String?
+
+  companyRole   CompanyRole?
+  workspaceRole WorkspaceRole?
+
+  invitedByUserId  String
+  acceptedByUserId String?
+  acceptedAt       DateTime?
+
+  createdAt DateTime @default(now())
+
+  invitedBy  User  @relation("invitesSent", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy User? @relation("invitesAccepted", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([pendingKey])
+  @@index([email])
+  @@index([expiresAt])
+  @@index([status])
+  @@index([companyId, status])
+  @@index([workspaceId, status])
+  @@map("invites")
+}
+
+// ============================================================
+// Plans, Add-ons, Subscriptions (dashboard billing control plane)
+// ============================================================
+
+enum PlanType {
+  STANDARD
+  CUSTOM
+}
+
+enum PlanStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum PriceInterval {
+  MONTH
+  YEAR
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  SUSPENDED
+}
+
+enum AddOnBillingType {
+  RECURRING
+  METERED
+  ONE_TIME
+}
+
+model Plan {
+  id          String     @id @default(uuid())
+  code        String     @unique
+  name        String
+  planType    PlanType   @default(STANDARD)
+  description String?
+  status      PlanStatus @default(ACTIVE)
+
+  stripeProductId      String?
+  stripePriceMonthlyId String?
+  stripePriceYearlyId  String?
+
+  baseEntitlements Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@index([planType])
+  @@index([status])
+  @@map("plans")
+}
+
+model AddOn {
+  id          String           @id @default(uuid())
+  code        String           @unique
+  name        String
+  description String?
+  billingType AddOnBillingType
+  isActive    Boolean          @default(true)
+
+  stripeProductId      String?
+  stripePriceMonthlyId String?
+  stripePriceYearlyId  String?
+
+  entitlementDelta Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptionAddOns SubscriptionAddOn[]
+
+  @@index([billingType])
+  @@index([isActive])
+  @@map("addons")
+}
+
+model Subscription {
+  id        String             @id @default(uuid())
+  companyId String             @unique
+  planId    String
+  status    SubscriptionStatus @default(TRIALING)
+
+  interval          PriceInterval?
+  trialEndsAt       DateTime?
+  currentPeriodEnd  DateTime?
+  cancelAtPeriodEnd Boolean        @default(false)
+
+  stripeCustomerId     String? @unique
+  stripeSubscriptionId String? @unique
+
+  overrideEntitlements Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  addOns    SubscriptionAddOn[]
+  snapshots EntitlementSnapshot[]
+
+  @@index([planId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model SubscriptionAddOn {
+  id             String @id @default(uuid())
+  subscriptionId String
+  addOnId        String
+
+  quantity      Int?
+  interval      PriceInterval?
+  stripePriceId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  addOn        AddOn        @relation(fields: [addOnId], references: [id], onDelete: Restrict)
+
+  @@unique([subscriptionId, addOnId])
+  @@index([subscriptionId])
+  @@index([addOnId])
+  @@map("subscription_addons")
+}
+
+model EntitlementSnapshot {
+  id             String @id @default(uuid())
+  subscriptionId String
+
+  effective Json
+  version   Int     @default(1)
+  reason    String?
+
+  createdAt DateTime @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId, createdAt])
+  @@map("entitlement_snapshots")
+}
+
+model StripeEvent {
+  id        String   @id
+  type      String
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  payload     Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([type])
+  @@index([companyId])
+  @@map("stripe_events")
+}
+
+// ============================================================
+// API Provisioning (dashboard-first, connect API later)
+// ============================================================
+
+enum ProvisioningStatus {
+  PENDING
+  PROVISIONED
+  FAILED
+}
+
+model ApiProvisioning {
+  id        String             @id @default(uuid())
+  companyId String             @unique
+  status    ProvisioningStatus @default(PENDING)
+
+  apiCompanyId String? @unique
+  error        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("api_provisioning")
+}
+
+// ============================================================
+// Dashboard Audit Logging
+// ============================================================
+
+enum AuditAction {
+  USER_CREATED
+  USER_SIGNUP
+  USER_LOGIN
+  USER_LOGOUT
+  USER_PASSWORD_CHANGE
+  USER_EMAIL_VERIFIED
+
+  COMPANY_CREATED
+  COMPANY_UPDATED
+  COMPANY_DELETED
+  WORKSPACE_CREATED
+  WORKSPACE_UPDATED
+  WORKSPACE_DELETED
+
+  MEMBER_INVITED
+  MEMBER_INVITE_ACCEPTED
+  MEMBER_ADDED
+  MEMBER_REMOVED
+  MEMBER_ROLE_UPDATED
+
+  PLAN_CREATED
+  PLAN_UPDATED
+  ADDON_CREATED
+  ADDON_UPDATED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_UPDATED
+  ENTITLEMENTS_SNAPSHOTTED
+
+  ADMIN_USER_UPDATE
+  ADMIN_USER_DELETE
+  ADMIN_COMPANY_UPDATE
+  ADMIN_COMPANY_DELETE
+  ADMIN_AUDIT_LOG_VIEW
+
+  SETTINGS_UPDATE
+}
+
+model AuditLog {
+  id String @id @default(uuid())
+
+  userId    String?
+  companyId String?
+
+  action       AuditAction
+  resourceType String?
+  resourceId   String?
+  details      Json?
+  ipAddress    String?
+  userAgent    String?
+
+  createdAt DateTime @default(now())
+
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
