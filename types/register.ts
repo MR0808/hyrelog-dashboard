@@ -17,6 +17,7 @@ export interface InitialRegistrationFormProps {
 
 export type RegisterInitialData = {
   userId?: string;
+  email: string;
 };
 
 export interface EmailVerificationFormProps {

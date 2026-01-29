@@ -64,7 +64,7 @@ model User {
   accounts      Account[]
   verifications Verification[] // if your better-auth setup uses this
 
-  emailVerificationTokens EmailVerificationToken[]
+  emailVerificationChallenges EmailVerificationChallenge[]
   emailChangeRecords      EmailChangeRecord[]
   phoneChangeRecords      PhoneChangeRecord[]
 
@@ -82,6 +82,9 @@ model User {
 
   // Tracking (created companies)
   companiesCreated Company[] @relation("CompanyCreatedBy")
+
+  // Workspaces where this user completed onboarding
+  workspacesOnboardingCompleted Workspace[] @relation("WorkspaceOnboardingCompletedBy")
 
   @@map("users")
 }
@@ -154,20 +157,31 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Optional: separate token lifecycle tracking for verification emails
-model EmailVerificationToken {
-  id        String    @id @default(uuid())
-  userId    String
-  tokenHash String    @unique
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
+model EmailVerificationChallenge {
+  id             String   @id @default(cuid())
+  userId         String
+  email          String
 
+  magicTokenHash String
+  otpHash        String
+
+  magicExpiresAt DateTime
+  otpExpiresAt   DateTime
+
+  otpAttempts    Int      @default(0)
+
+  sendCount      Int      @default(0)
+  lastSentAt     DateTime?
+
+  usedAt         DateTime?
+  revokedAt      DateTime?
+
+  createdAt      DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@index([expiresAt])
-  @@map("email_verification_tokens")
+  @@index([email])
+  @@map("email_verification_challenges")
 }
 
 model EmailChangeRecord {
@@ -312,9 +326,10 @@ enum DataRegion {
 
 model Company {
   id              String     @id @default(uuid())
-  slug            String @unique
+  slug            String     @unique
   name            String
   preferredRegion DataRegion @default(APAC)
+  isAutoNamed Boolean @default(false)
 
   // Link to API plane later (optional)
   apiCompanyId String? @unique
@@ -340,26 +355,68 @@ model Company {
   @@map("companies")
 }
 
+enum WorkspaceOnboardingStatus {
+  PENDING
+  COMPLETE
+}
+
 model Workspace {
   id              String      @id @default(uuid())
   companyId       String
   name            String
-  slug            String @unique
+  slug            String
   preferredRegion DataRegion?
+
+  onboardingStatus        WorkspaceOnboardingStatus @default(PENDING)
+  onboardingCompletedAt   DateTime?
+  onboardingCompletedBy   String?
+  onboardingCompletedByUser User? @relation("WorkspaceOnboardingCompletedBy", fields: [onboardingCompletedBy], references: [id], onDelete: SetNull)
 
   apiWorkspaceId String? @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  isAutoNamed Boolean @default(false)
 
   company Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   members WorkspaceMember[]
   invites Invite[]
+  projects Project[]
 
   @@index([companyId])
   @@index([apiWorkspaceId])
+   @@unique([companyId, slug])
   @@map("workspaces")
+}
+
+enum ProjectEnvironment {
+  PRODUCTION
+  STAGING
+  DEVELOPMENT
+  TEST
+}
+
+model Project {
+  id          String             @id @default(uuid())
+  workspaceId String
+
+  name        String
+  slug        String
+  environment ProjectEnvironment @default(PRODUCTION)
+
+  preferredRegion DataRegion?
+  apiProjectId String? @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@unique([workspaceId, slug])
+  @@map("projects")
 }
 
 // ============================================================
@@ -397,11 +454,16 @@ model CompanyMember {
   @@map("company_members")
 }
 
+
+
 model WorkspaceMember {
   id          String        @id @default(uuid())
   userId      String
   workspaceId String
   role        WorkspaceRole @default(READER)
+
+  onboardingCompletedAt DateTime?
+  onboardingSeenAt      DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -414,6 +476,8 @@ model WorkspaceMember {
   @@index([userId])
   @@map("workspace_members")
 }
+
+
 
 // ============================================================
 // Invites (Company scope + optional workspace scope)

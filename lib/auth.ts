@@ -26,7 +26,7 @@ const options = {
       hash: hashPassword,
       verify: verifyPassword
     },
-    autoSignIn: false,
+    autoSignIn: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
       //   await sendResetEmail({
@@ -61,6 +61,10 @@ const options = {
       },
       lastName: {
         type: 'string',
+        required: true
+      },
+      acceptTermsAt: {
+        type: 'date',
         required: true
       },
       gender: {
@@ -137,21 +141,17 @@ export const auth = betterAuth({
   plugins: [
     ...(options.plugins ?? []),
     customSession(async ({ user, session }, ctx) => {
-      //   const accounts = await prisma.account.findMany({
-      //     where: { id: user.id }
-      //   });
-      //   const userCompany = await prisma.companyMember.findFirst({
-      //     where: { userId: user.id },
-      //     include: { company: true }
-      //   });
-      //   if (!userCompany) throw error('no company found');
-      //   const company = userCompany.company;
+      const userCompany = await prisma.companyMember.findFirst({
+        where: { userId: user.id },
+        include: { company: true }
+      });
+      if (!userCompany) throw error('no company found');
+      const company = userCompany.company;
       return {
         session,
-        user
-        // accounts,
-        // company,
-        // userCompany
+        user,
+        company,
+        userCompany
       };
     }, options),
     openAPI()

@@ -21,27 +21,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { registerInitial } from '@/actions/register';
 import { RegisterSchema } from '@/schemas/register';
-import type { InitialRegistrationFormProps } from '@/types/register';
 import { checkPasswordRequirements } from '@/utils/checkPassword';
 import Link from 'next/link';
 
-const InitialRegistrationForm = ({ data, onNext }: InitialRegistrationFormProps) => {
+const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
 
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<React.ReactNode | null>(null);
 
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      companyName: data.companyName,
-      email: data.email,
-      password: data.password,
-      terms: data.terms
+      firstName: '',
+      lastName: '',
+      companyName: '',
+      email: '',
+      password: '',
+      terms: false
     }
   });
 
@@ -50,17 +48,13 @@ const InitialRegistrationForm = ({ data, onNext }: InitialRegistrationFormProps)
 
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     startTransition(async () => {
-      toast.dismiss();
-      //   const result = await registerInitial(values);
-      //   if (!result.success || !result.data) {
-      //     toast.error(result.message, { position: 'top-center' });
-      //   } else if (result.data.companyToken) {
-      //     router.push(`/auth/invite/company/${result.data.companyToken}`);
-      //   } else if (result.data.teamToken) {
-      //     router.push(`/auth/invite/team/${result.data.teamToken}`);
-      //   } else if (result.data.userId) {
-      //     onNext({ ...values, userId: result.data.userId });
-      //   }
+      setError(null);
+      const result = await registerInitial(values);
+      if (!result.success || !result.data) {
+        toast.error(result.message, { position: 'top-center' });
+      } else if (result.data.userId) {
+        router.push(`/auth/check-email?email=${result.data.email}`);
+      }
     });
   };
 
@@ -68,24 +62,25 @@ const InitialRegistrationForm = ({ data, onNext }: InitialRegistrationFormProps)
     const errorMessages = Object.entries(errors).map(([field, error]) => (
       <li key={field}>{error.message || `Invalid ${field}`}</li>
     ));
+    setError(errorMessages);
 
-    toast.dismiss();
-    toast.error('Please fix the following errors:', {
-      position: 'top-center',
-      description: <ul className="list-disc ml-4 space-y-1">{errorMessages}</ul>,
-      closeButton: true,
-      duration: Number.POSITIVE_INFINITY
-    });
+    // toast.dismiss();
+    // toast.error('Please fix the following errors:', {
+    //   position: 'top-center',
+    //   description: <ul className="list-disc ml-4 space-y-1">{errorMessages}</ul>,
+    //   closeButton: true,
+    //   duration: Number.POSITIVE_INFINITY
+    // });
   };
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, onError)}
         className="space-y-4"
       >
         {error && (
           <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-            {error}
+            <ul className="list-disc ml-4 space-y-1">{error}</ul>
           </div>
         )}
 
@@ -303,9 +298,9 @@ const InitialRegistrationForm = ({ data, onNext }: InitialRegistrationFormProps)
         <Button
           type="submit"
           className="w-full bg-brand-500 hover:bg-brand-600 text-white"
-          disabled={isLoading}
+          disabled={isPending}
         >
-          {isLoading ? (
+          {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Creating account...
@@ -319,4 +314,4 @@ const InitialRegistrationForm = ({ data, onNext }: InitialRegistrationFormProps)
   );
 };
 
-export default InitialRegistrationForm;
+export default RegisterForm;

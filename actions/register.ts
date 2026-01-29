@@ -3,12 +3,18 @@
 import * as z from 'zod';
 import GithubSlugger from 'github-slugger';
 import { APIError } from 'better-auth/api';
+import {
+  Prisma,
+  CompanyRole,
+  WorkspaceRole,
+  SubscriptionStatus,
+  AuditAction
+} from '@/generated/prisma/client';
 
 import { RegisterSchema } from '@/schemas/register';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
-import { generateOTP } from '@/lib/otp';
-// import { sendVerificationEmail } from '@/lib/mail';
+import { sendVerificationEmail } from '@/lib/email/sendVerificationEmail';
 import { EmailCheckResult, RegisterInitialData } from '@/types/register';
 import { ActionResult } from '@/types/global';
 
@@ -74,30 +80,12 @@ export const registerInitial = async (
         firstName,
         lastName,
         email,
-        password
+        password,
+        acceptTermsAt: new Date()
       }
     });
 
-    const otp = generateOTP();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    // Create unique company slug
-    let slug = slugger.slug(compName);
-    let slugExists = true;
-
-    while (slugExists) {
-      const checkSlug = await prisma.company.findUnique({
-        where: { slug }
-      });
-
-      if (!checkSlug) {
-        slugExists = false;
-      } else {
-        slug = slugger.slug(compName);
-      }
-    }
-
-    const plan = await prisma.plan.findUnique({ where: { code: 'free' } });
+    const plan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
 
     if (!plan) {
       return {
@@ -106,96 +94,161 @@ export const registerInitial = async (
       };
     }
 
-    const company = await prisma.company.create({
-      data: {
-        slug,
-        name: compName,
-        creatorId: data.user.id,
-        planId: plan.id
-      }
-    });
+    const planId = plan.id;
 
-    await logCompanyCreated(data.user.id, {
-      companyId: company.id,
-      companyName: company.name
-    });
-
-    await prisma.companyMember.create({
-      data: {
-        companyId: company.id,
-        userId: data.user.id,
-        role: 'COMPANY_ADMIN'
-      }
-    });
-
-    // Reset slugger to avoid weird cumulative state
-    slugger.reset();
-
-    // Create default team
-    let teamSlug = slugger.slug(compName);
-    let teamSlugExists = true;
-
-    while (teamSlugExists) {
-      const checkSlug = await prisma.team.findUnique({
-        where: { slug: teamSlug }
-      });
-
-      if (!checkSlug) {
-        teamSlugExists = false;
-      } else {
-        teamSlug = slugger.slug(compName);
-      }
-    }
-
-    const team = await prisma.team.create({
-      data: {
-        slug: teamSlug,
-        name: compName,
-        description: `The default team for ${compName}`,
-        companyId: company.id,
-        creatorId: data.user.id,
-        defaultTeam: true
-      }
-    });
-
-    await prisma.teamMember.create({
-      data: {
-        role: 'TEAM_ADMIN',
-        teamId: team.id,
-        userId: data.user.id
-      }
-    });
-
-    // Email verification record
-    await prisma.verification.create({
-      data: {
-        identifier: `email-otp:${data.user.id}`,
-        value: otp,
-        expiresAt
-      }
-    });
-
-    const emailSent = await sendVerificationEmail({ email, otp, name });
-
-    if (emailSent.error) {
+    const userId = data.user?.id;
+    if (!userId) {
       return {
         success: false,
-        message: 'Failed to send verification email'
+        message: 'Sign up succeeded but user id was not returned.'
       };
     }
 
-    await logUserRegistered(data.user.id, {
-      registrationMethod: 'email',
-      emailVerified: false
-    });
+    function buildCompanySlug(base: string, attempt: number) {
+      const companySlugger = new GithubSlugger();
+      const label = attempt === 0 ? base : `${base} ${attempt + 1}`;
+      return companySlugger.slug(label);
+    }
 
-    await logEmailVerifyRequested(data.user.id, data.user.email);
+    async function runRegistrationTransaction(maxAttempts = 10) {
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const companySlug = buildCompanySlug(compName, attempt);
+        try {
+          if (attempt > 0) {
+            console.warn(
+              `Retrying registration transaction (attempt ${attempt + 1}/${maxAttempts})`
+            );
+          }
+          return await prisma.$transaction(async (tx) => {
+            // 1) Audit: USER_CREATED
+            await tx.auditLog.create({
+              data: {
+                userId,
+                action: AuditAction.USER_CREATED,
+                resourceType: 'User',
+                resourceId: userId,
+                details: {
+                  email,
+                  firstName,
+                  lastName,
+                  via: 'SELF_SERVE'
+                }
+              }
+            });
+
+            // 2) Create company with unique slug
+            const company = await tx.company.create({
+              data: {
+                name: compName,
+                slug: companySlug,
+                createdVia: 'SELF_SERVE',
+                createdByUserId: userId,
+
+                // Membership: user is OWNER
+                members: {
+                  create: {
+                    userId,
+                    role: CompanyRole.OWNER
+                  }
+                }
+              }
+            });
+
+            // 3) Audit: COMPANY_CREATED
+            await tx.auditLog.create({
+              data: {
+                userId,
+                companyId: company.id,
+                action: AuditAction.COMPANY_CREATED,
+                resourceType: 'Company',
+                resourceId: company.id,
+                details: {
+                  name: company.name,
+                  slug: company.slug
+                }
+              }
+            });
+
+            // 4) Create workspace "Production" with slug scoped to company
+            const workspace = await tx.workspace.create({
+              data: {
+                companyId: company.id,
+                name: 'Production',
+                slug: 'production',
+
+                // Membership: user is ADMIN
+                members: {
+                  create: {
+                    userId,
+                    role: WorkspaceRole.ADMIN
+                  }
+                }
+              }
+            });
+
+            // 5) Audit: WORKSPACE_CREATED
+            await tx.auditLog.create({
+              data: {
+                userId,
+                companyId: company.id,
+                action: AuditAction.WORKSPACE_CREATED,
+                resourceType: 'Workspace',
+                resourceId: workspace.id,
+                details: {
+                  name: workspace.name,
+                  slug: workspace.slug
+                }
+              }
+            });
+
+            // 6) Create subscription (ACTIVE, plan.id)
+            const subscription = await tx.subscription.create({
+              data: {
+                companyId: company.id,
+                planId,
+                status: SubscriptionStatus.ACTIVE
+              }
+            });
+
+            return { company, workspace, subscription };
+          });
+        } catch (err) {
+          lastErr = err;
+          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+            console.warn(
+              `Registration transaction hit unique constraint (attempt ${attempt + 1}/${maxAttempts})`
+            );
+            continue;
+          }
+          throw err;
+        }
+      }
+      throw lastErr ?? new Error('Failed to complete registration transaction.');
+    }
+
+    const result = await runRegistrationTransaction();
+
+    // Send verification email (magic link + OTP fallback)
+    // Don't fail registration if email fails - user is already registered
+    try {
+      await sendVerificationEmail({
+        userId: data.user.id,
+        email: data.user.email,
+        firstName: data.user.firstName ?? undefined
+      });
+      console.log(`✅ Verification email sent to ${data.user.email}`);
+    } catch (emailError) {
+      console.error('❌ Failed to send verification email:', emailError);
+      // Continue - user is registered, they can request a new email
+    }
 
     return {
       success: true,
       message: 'Registration started successfully',
       data: {
-        userId: data.user.id
+        userId: data.user.id,
+        email: data.user.email
       }
     };
   } catch (err: unknown) {
@@ -208,7 +261,7 @@ export const registerInitial = async (
 
     return {
       success: false,
-      message: 'Internal Server Error'
+      message: `Internal Server Error: ${err}`
     };
   }
 };

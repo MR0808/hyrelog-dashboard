@@ -10,9 +10,12 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import RegisterForm from '@/components/ui/auth/registration/RegisterForm';
+import RegisterForm from '@/components/auth/RegisterForm';
+import { isLoggedIn } from '@/lib/authCheck';
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  await isLoggedIn();
+
   const features = [
     'Complete audit trail visibility',
     'Real-time compliance monitoring',
