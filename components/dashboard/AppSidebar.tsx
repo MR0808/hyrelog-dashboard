@@ -107,7 +107,7 @@ export function AppSidebar({ companyRole, company }: AppSidebarProps) {
 
   return (
     <aside className="w-64 border-r border-border bg-card flex flex-col h-screen">
-      <div className="px-6 py-5 border-b border-border">
+      <div className="px-6 py-5 ">
         <Link
           href="/"
           className="block"

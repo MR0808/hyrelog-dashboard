@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/sonner';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 const _inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const _geistMono = Geist_Mono({ subsets: ['latin'] });
@@ -54,8 +55,10 @@ export default function RootLayout({
         className={`font-sans antialiased`}
         suppressHydrationWarning
       >
-        {children}
-        <Toaster richColors />
+        <ThemeProvider>
+          {children}
+          <Toaster richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

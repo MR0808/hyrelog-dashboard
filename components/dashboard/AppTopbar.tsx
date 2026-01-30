@@ -41,7 +41,7 @@ export function AppTopbar({
   const userInitials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
 
   return (
-    <header className="h-16 border-b border-border bg-card flex items-center px-6">
+    <header className="h-20 border-b border-border bg-card flex items-center px-6">
       <div className="flex items-center gap-2 flex-1">
         <nav className="flex items-center gap-2 text-sm">
           {breadcrumb.map((item, index) => (
