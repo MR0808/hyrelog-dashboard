@@ -8,3 +8,15 @@ export const passwordSchema = z
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
   .regex(/[0-9]/, 'Password must contain at least one number')
   .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character');
+
+export const LoginSchema = z.object({
+  email: z.email({
+    message: 'Email is required'
+  }),
+  password: z.string().min(1, {
+    message: 'Password is required'
+  }),
+  token: z.optional(z.string()),
+  rememberMe: z.optional(z.boolean()),
+  backupCode: z.optional(z.string())
+});

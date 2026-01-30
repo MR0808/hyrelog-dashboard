@@ -51,7 +51,7 @@ export default function VerifyCodeClient({ defaultEmail }: { defaultEmail: strin
       const result = await verifyCodeAction({ email, code: data.otp });
 
       if (result.success) {
-        router.replace('/');
+        router.replace(result.destination || '/');
       } else {
         setError(result.message || 'Invalid OTP. Please try again.');
       }

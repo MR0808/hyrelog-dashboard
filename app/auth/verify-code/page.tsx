@@ -3,14 +3,14 @@ import { ShieldCheck } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import VerifyCodeClient from '@/components/auth/VerifyCodeClient';
-import { authCheckAuth } from '@/lib/authCheck';
+import { requireVerifySession } from '@/lib/auth/requireVerifySession';
 
 export default async function VerifyCodePage({
   searchParams
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
-  await authCheckAuth();
+  const session = await requireVerifySession();
 
   const { email } = await searchParams;
   return (

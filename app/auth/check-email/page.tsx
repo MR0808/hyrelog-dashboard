@@ -3,14 +3,14 @@ import { Mail } from 'lucide-react';
 
 import CheckEmailClient from '@/components/auth/CheckEmailClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { authCheckAuth } from '@/lib/authCheck';
+import { requireVerifySession } from '@/lib/auth/requireVerifySession';
 
 export default async function CheckEmailPage({
   searchParams
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
-  await authCheckAuth();
+  const session = await requireVerifySession();
 
   const { email } = await searchParams;
   const features = [

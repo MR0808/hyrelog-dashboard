@@ -6,6 +6,10 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { sendVerificationEmail } from '@/lib/email/sendVerificationEmail';
 import { sha256 } from '@/lib/crypto';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { getPostLoginDestination } from '@/lib/auth/postLoginRoute';
 
 const ResendSchema = z.object({
   email: z.email()
@@ -219,6 +223,13 @@ const VerifyCodeSchema = z.object({
 });
 
 export async function verifyCodeAction(values: z.infer<typeof VerifyCodeSchema>) {
+  const h = await headers();
+
+  const session = await auth.api.getSession({ headers: h });
+  if (!session) {
+    redirect(`/auth/login`);
+  }
+
   const parsed = VerifyCodeSchema.safeParse(values);
   if (!parsed.success) {
     return { success: false as const, message: 'Please enter a valid email and 6-digit code.' };
@@ -233,5 +244,9 @@ export async function verifyCodeAction(values: z.infer<typeof VerifyCodeSchema>)
     return { success: false as const, message: res.message };
   }
 
-  return { success: true as const };
+  const updatedSession = await auth.api.getSession({ headers: h });
+
+  const dest = await getPostLoginDestination(updatedSession as any, '/');
+
+  return { success: true as const, destination: dest };
 }

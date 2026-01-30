@@ -44,6 +44,7 @@ export const registerInitial = async (
   const name = `${firstName} ${lastName}`;
 
   const compName = companyName || `${name}'s Company`;
+  const isAutoNamed = companyName ? false : true;
 
   try {
     const emailCheck = await checkEmail(email);
@@ -144,6 +145,7 @@ export const registerInitial = async (
                 slug: companySlug,
                 createdVia: 'SELF_SERVE',
                 createdByUserId: userId,
+                isAutoNamed,
 
                 // Membership: user is OWNER
                 members: {

@@ -4,14 +4,14 @@ import { CheckCircle2, ArrowRight, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { verifyMagicLink } from '@/actions/emails';
-import { authCheckAuth } from '@/lib/authCheck';
+import { requireVerifySession } from '@/lib/auth/requireVerifySession';
 
 export default async function VerifyEmailPage({
   searchParams
 }: {
   searchParams: Promise<{ token?: string; cid?: string; email?: string }>;
 }) {
-  await authCheckAuth();
+  await requireVerifySession();
 
   const { token, cid, email } = await searchParams;
   const isValid = { valid: false, message: '' };

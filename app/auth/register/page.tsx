@@ -11,10 +11,10 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import RegisterForm from '@/components/auth/RegisterForm';
-import { isLoggedIn } from '@/lib/authCheck';
+import { redirectIfLoggedIn } from '@/lib/auth/isLoggedInRedirect';
 
 export default async function RegisterPage() {
-  await isLoggedIn();
+  await redirectIfLoggedIn();
 
   const features = [
     'Complete audit trail visibility',
