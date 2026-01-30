@@ -52,12 +52,12 @@ export function LoginForm() {
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     startTransition(async () => {
       const data = await login(values, callbackURL);
-      const { error, destination } = data;
+      const { error } = data;
       if (error) {
         toast.error(error, { position: 'top-center' });
       } else {
         toast.success('Log in successful', { position: 'top-center' });
-        router.push(destination || '/');
+        router.push(`/auth/post-login?returnTo=${encodeURIComponent(callbackURL || '/')}`);
       }
     });
   };

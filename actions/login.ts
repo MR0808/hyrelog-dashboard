@@ -17,7 +17,6 @@ import { safeReturnTo } from '@/lib/auth/redirects';
 
 type LoginResult = {
   error: string | null;
-  destination?: string | null;
 };
 
 type TokenLookupResult = {
@@ -58,21 +57,13 @@ export const login = async (
       return { error: 'Login failed1.' };
     }
 
-    const session = await auth.api.getSession({ headers: h });
-    if (!session) {
-      return { error: 'Login failed2.' };
-    }
-
-    const destination = await getPostLoginDestination(session as any, rt);
-
     // await logUserLogin(data.user.id, {
     //   loginMethod: 'email',
     //   rememberMe
     // });
 
     return {
-      error: null,
-      destination
+      error: null
     };
   } catch (err: unknown) {
     if (err instanceof APIError) {
