@@ -10,7 +10,8 @@ export async function requireDashboardAccess(returnTo?: string) {
   const rt = safeReturnTo(returnTo);
 
   const h = await headers();
-  const session = await auth.api.getSession({ headers: h });
+  // Bypass cookie cache so emailVerified etc. are fresh (e.g. right after magic-link verify)
+  const session = await auth.api.getSession({ headers: h, query: { disableCookieCache: true } });
 
   if (!session) {
     redirect(toLogin(rt));

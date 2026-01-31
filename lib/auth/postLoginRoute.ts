@@ -2,16 +2,12 @@
 
 import { prisma } from '@/lib/prisma';
 import { safeReturnTo, toCheckEmail, toOnboarding } from '@/lib/auth/redirects';
-
-type SessionShape = {
-  user: { id: string; email: string; emailVerified: boolean };
-  company: { id: string; createdByUserId: string | null };
-};
+import { SessionShape } from '@/types/auth';
 
 export async function getPostLoginDestination(session: SessionShape, returnTo?: string) {
   const rt = safeReturnTo(returnTo);
 
-  // 1) Email verification gate
+  // 1) Email verification gate (caller should use getSession with disableCookieCache for fresh session)
   if (!session.user.emailVerified) {
     return toCheckEmail(session.user.email, rt);
   }

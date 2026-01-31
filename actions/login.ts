@@ -8,21 +8,8 @@ import { APIError } from 'better-auth/api';
 import { auth, ErrorCode } from '@/lib/auth';
 import { LoginSchema } from '@/schemas/auth';
 import { prisma } from '@/lib/prisma';
-import { getPostLoginDestination } from '@/lib/auth/postLoginRoute';
 import { safeReturnTo } from '@/lib/auth/redirects';
-
-/* ------------------------------------------------------------------
- * Types
- * ------------------------------------------------------------------ */
-
-type LoginResult = {
-  error: string | null;
-};
-
-type TokenLookupResult = {
-  data: string | null;
-  error: boolean;
-};
+import { LoginResult, TokenLookupResult } from '@/types/login';
 
 /* ------------------------------------------------------------------
  * Login

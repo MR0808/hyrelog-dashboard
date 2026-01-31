@@ -2,6 +2,7 @@
 
 import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
 
+import { useSession } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/dashboard/ThemeToggle';
@@ -17,8 +18,9 @@ import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 import type { User as UserType, Company, Workspace } from '@/types/dashboard';
 
 interface AppTopbarProps {
-  user: UserType;
-  company: Company;
+  /** Fallback when session is loading or not available (e.g. mock data). Session is used when available so the topbar updates reactively. */
+  user?: UserType;
+  company?: Company;
   workspaces: Workspace[];
   currentWorkspaceId?: string;
   breadcrumb: {
@@ -30,15 +32,43 @@ interface AppTopbarProps {
 }
 
 export function AppTopbar({
-  user,
-  company,
+  user: userProp,
+  company: companyProp,
   workspaces,
   currentWorkspaceId,
   breadcrumb,
   showWorkspaceSwitcher = false,
   onWorkspaceChange
 }: AppTopbarProps) {
-  const userInitials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+  const { data: session, isPending } = useSession();
+
+  // Prefer session so name/company updates automatically (e.g. after updateUser); fall back to props when loading or mock data
+  const user: UserType | undefined = session?.user
+    ? {
+        id: session.user.id,
+        email: session.user.email ?? '',
+        firstName: (session.user as { firstName?: string }).firstName ?? '',
+        lastName: (session.user as { lastName?: string }).lastName ?? '',
+        companyRole: (session.user as { companyRole?: UserType['companyRole'] }).companyRole ?? 'MEMBER',
+        platformRole: (session.user as { platformRole?: UserType['platformRole'] }).platformRole
+      }
+    : userProp;
+  const company: Company | undefined = session?.company
+    ? {
+        id: session.company.id,
+        name: session.company.name,
+        slug: session.company.slug,
+        preferredRegion: (session.company as { preferredRegion?: string }).preferredRegion ?? '',
+        planType: (session.company as { planType?: Company['planType'] }).planType ?? 'TRIAL',
+        trialDaysRemaining: (session.company as { trialDaysRemaining?: number }).trialDaysRemaining
+      }
+    : companyProp;
+
+  const displayName =
+    user ? `${user.firstName} ${user.lastName}`.trim() || user.email : null;
+  const userInitials = user
+    ? (`${(user.firstName || '')[0]}${(user.lastName || '')[0]}`.toUpperCase() || user.email[0]?.toUpperCase()) ?? '?'
+    : '?';
 
   return (
     <header className="h-20 border-b border-border bg-card flex items-center px-6">
@@ -93,11 +123,18 @@ export function AppTopbar({
           >
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                <p className="text-xs leading-none text-muted-foreground mt-1">{company.name}</p>
+                {isPending && !user && (
+                  <p className="text-sm text-muted-foreground">Loading…</p>
+                )}
+                {user && (
+                  <>
+                    <p className="text-sm font-medium leading-none">{displayName}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    {company && (
+                      <p className="text-xs leading-none text-muted-foreground mt-1">{company.name}</p>
+                    )}
+                  </>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

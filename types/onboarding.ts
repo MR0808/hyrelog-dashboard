@@ -5,3 +5,7 @@ export interface OnboardingFormProps {
   data: z.infer<typeof SaveSchema>;
   isAutoNamed: boolean;
 }
+
+export interface OnboardingLayoutProps {
+  children: React.ReactNode;
+}

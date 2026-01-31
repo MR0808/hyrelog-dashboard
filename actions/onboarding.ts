@@ -2,30 +2,11 @@
 
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
+
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/lib/auth';
 import { LoadSchema, SaveSchema } from '@/schemas/onboarding';
-
-// -----------------------------
-// Helpers
-// -----------------------------
-async function getSessionFromHeaders() {
-  const h = await headers();
-  return auth.api.getSession({ headers: h });
-}
-
-function safeReturnTo(path?: string) {
-  if (!path) return '/';
-  if (!path.startsWith('/')) return '/';
-  if (path.startsWith('//')) return '/';
-  return path;
-}
-
-function checkEmailRedirect(email: string, returnTo?: string) {
-  const rt = safeReturnTo(returnTo);
-  return `/auth/check-email?email=${encodeURIComponent(email)}&returnTo=${encodeURIComponent(rt)}`;
-}
+import { getFreshSession, getSessionFromHeaders } from '@/lib/session';
+import { safeReturnTo, toCheckEmail } from '@/lib/auth/redirects';
 
 /**
  * Finds the workspace that should be onboarded for the creator.
@@ -75,11 +56,11 @@ export async function loadOnboardingData(input?: z.infer<typeof LoadSchema>) {
   const parsed = LoadSchema.safeParse(input ?? {});
   const returnTo = safeReturnTo(parsed.success ? parsed.data.returnTo : undefined);
 
-  const session = await getSessionFromHeaders();
+  const session = await getFreshSession();
   if (!session) redirect(`/auth/login?callbackURL=${encodeURIComponent(returnTo)}`);
 
   if (!session.user.emailVerified) {
-    redirect(checkEmailRedirect(session.user.email, returnTo));
+    redirect(toCheckEmail(session.user.email, returnTo));
   }
 
   // Creator-only rule
@@ -185,7 +166,7 @@ export async function saveOnboarding(values: z.infer<typeof SaveSchema>) {
     return {
       success: false as const,
       message: 'Email not verified.',
-      redirectTo: checkEmailRedirect(session.user.email, rt)
+      redirectTo: toCheckEmail(session.user.email, rt)
     };
   }
 
@@ -315,7 +296,7 @@ export async function skipOnboarding(input: { workspaceId: string; returnTo?: st
     return {
       success: false as const,
       message: 'Email not verified.',
-      redirectTo: checkEmailRedirect(session.user.email, rt)
+      redirectTo: toCheckEmail(session.user.email, rt)
     };
   }
 

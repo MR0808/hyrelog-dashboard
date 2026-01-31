@@ -1,12 +1,5 @@
+import { AuthLayoutProps } from '@/types/auth';
 import Image from 'next/image';
-import type { ReactNode } from 'react';
-
-interface AuthLayoutProps {
-  children: ReactNode;
-  title: string;
-  description: string;
-  features?: string[];
-}
 
 export function AuthLayout({
   children,

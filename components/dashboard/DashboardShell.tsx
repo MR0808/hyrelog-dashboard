@@ -11,6 +11,8 @@ interface DashboardShellProps {
   company: Company;
   workspaces: Workspace[];
   isCompanyAdmin: boolean;
+  /** Current pathname (e.g. `/workspaces`, `/company`), set by middleware. */
+  pathname?: string;
   children: React.ReactNode;
 }
 
@@ -19,6 +21,7 @@ export function DashboardShell({
   company,
   workspaces,
   isCompanyAdmin,
+  pathname = '',
   children
 }: DashboardShellProps) {
   // For workspace users, default to first workspace alphabetically

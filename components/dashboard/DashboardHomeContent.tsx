@@ -1,7 +1,7 @@
 'use client';
 
-// import { CompanyDashboard } from './company-dashboard';
-// import { WorkspaceDashboard } from './workspace-dashboard';
+import { CompanyDashboard } from './CompanyDashboard';
+import { WorkspaceDashboard } from './WorkspaceDashboard';
 import type { Company, Workspace, Project, Member, BillingInfo } from '@/types/dashboard';
 
 interface DashboardHomeContentProps {
@@ -33,8 +33,7 @@ export function DashboardHomeContent({
 
   return (
     <div className="p-6">
-      test content
-      {/* {currentWorkspace ? (
+      {currentWorkspace ? (
         <WorkspaceDashboard
           workspace={currentWorkspace}
           projects={workspaceProjects}
@@ -47,7 +46,7 @@ export function DashboardHomeContent({
           members={members}
           billingInfo={billingInfo}
         />
-      )} */}
+      )}
     </div>
   );
 }

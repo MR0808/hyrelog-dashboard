@@ -1,32 +1,45 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { redirect } from 'next/navigation';
 import { CheckCircle2, ArrowRight, X, ArrowLeft } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { verifyMagicLink } from '@/actions/emails';
 import { requireVerifySession } from '@/lib/auth/requireVerifySession';
+import { safeReturnTo } from '@/lib/auth/redirects';
 
 export default async function VerifyEmailPage({
   searchParams
 }: {
-  searchParams: Promise<{ token?: string; cid?: string; email?: string }>;
+  searchParams: Promise<{ token?: string; cid?: string; email?: string; returnTo?: string }>;
 }) {
-  await requireVerifySession();
+  const { token, cid, email, returnTo } = await searchParams;
 
-  const { token, cid, email } = await searchParams;
+  // When token+cid are present, allow access without session so the magic link works
+  // when opened in a different browser/device or when the user has no session.
+  const hasMagicLinkParams = Boolean(token && cid);
+  if (!hasMagicLinkParams) {
+    await requireVerifySession(returnTo);
+  }
+
   const isValid = { valid: false, message: '' };
 
   if (token && cid) {
     const res = await verifyMagicLink({ cid, token });
     if (res.ok) {
       isValid.valid = true;
+      const rt = safeReturnTo(returnTo);
+      // User is already logged in from signup; post-login uses DB for emailVerified so they go to / or /onboarding
+      redirect(`/auth/post-login?returnTo=${encodeURIComponent(rt)}`);
     } else {
       isValid.valid = false;
       isValid.message = res.message;
     }
   } else {
     isValid.valid = false;
-    isValid.message = 'This verification link is missing required information.';
+    isValid.message =
+      'This verification link is missing required information. Some email clients strip links—try "Use a code instead" below, or request a new link from the check-email page.';
   }
 
   return (

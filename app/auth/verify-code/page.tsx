@@ -10,7 +10,7 @@ export default async function VerifyCodePage({
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
-  const session = await requireVerifySession();
+  await requireVerifySession();
 
   const { email } = await searchParams;
   return (

@@ -10,15 +10,9 @@ export default async function CheckEmailPage({
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
-  const session = await requireVerifySession();
+  await requireVerifySession();
 
   const { email } = await searchParams;
-  const features = [
-    'Complete audit trail visibility',
-    'Real-time compliance monitoring',
-    'Enterprise-grade security',
-    'Unlimited team members'
-  ];
 
   return (
     <div className="min-h-screen flex">
@@ -40,7 +34,7 @@ export default async function CheckEmailPage({
               Check your inbox
             </h1>
             <p className="text-[#7B8794] text-lg leading-relaxed max-w-md">
-              {"We've sent you a secure link to reset your password. The link expires in 24 hours."}
+              {"We've sent you a secure link to verify your email. The link expires in 15 minutes."}
             </p>
           </div>
           <div className="text-[#7B8794] text-sm">© 2026 HyreLog. All rights reserved.</div>
@@ -69,7 +63,7 @@ export default async function CheckEmailPage({
                 Check your email
               </CardTitle>
               <CardDescription className="text-muted-foreground">
-                We sent a password reset link to
+                We sent a verification link to
                 <br />
                 <span className="font-medium text-foreground">{email || 'your email'}</span>
               </CardDescription>

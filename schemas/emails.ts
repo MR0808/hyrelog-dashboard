@@ -10,3 +10,12 @@ export const otpSchema = z.object({
 });
 
 export type OtpFormData = z.infer<typeof otpSchema>;
+
+export const VerifyCodeSchema = z.object({
+  email: z.email(),
+  code: z.string().regex(/^\d{6}$/)
+});
+
+export const ResendSchema = z.object({
+  email: z.email()
+});

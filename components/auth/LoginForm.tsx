@@ -1,7 +1,7 @@
 'use client';
 
 import { z } from 'zod';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm, SubmitErrorHandler } from 'react-hook-form';
@@ -39,6 +39,13 @@ export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const callbackURL = searchParams.get('callbackURL') || '/';
+  const verified = searchParams.get('verified') === '1';
+
+  useEffect(() => {
+    if (verified) {
+      toast.success('Your email is verified. Sign in to continue.', { position: 'top-center' });
+    }
+  }, [verified]);
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -197,7 +204,7 @@ export function LoginForm() {
         <p className="text-sm text-muted-foreground">
           {"Don't have an account?"}{' '}
           <Link
-            href="/signup"
+            href="/auth/register"
             className="text-brand-500 hover:text-brand-600 font-medium transition-colors"
           >
             Create account

@@ -10,10 +10,8 @@ import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { getPostLoginDestination } from '@/lib/auth/postLoginRoute';
-
-const ResendSchema = z.object({
-  email: z.email()
-});
+import { getFreshSession } from '@/lib/session';
+import { ResendSchema, VerifyCodeSchema } from '@/schemas/emails';
 
 // NOTE: This assumes you have EmailVerificationChallenge model like the one we discussed.
 // If your model/table name differs, rename accordingly.
@@ -217,11 +215,6 @@ export async function verifyOtp(args: { email: string; code: string }) {
   return { ok: true as const, userId: user.id };
 }
 
-const VerifyCodeSchema = z.object({
-  email: z.email(),
-  code: z.string().regex(/^\d{6}$/)
-});
-
 export async function verifyCodeAction(values: z.infer<typeof VerifyCodeSchema>) {
   const h = await headers();
 
@@ -244,7 +237,7 @@ export async function verifyCodeAction(values: z.infer<typeof VerifyCodeSchema>)
     return { success: false as const, message: res.message };
   }
 
-  const updatedSession = await auth.api.getSession({ headers: h });
+  const updatedSession = await getFreshSession();
 
   const dest = await getPostLoginDestination(updatedSession as any, '/');
 

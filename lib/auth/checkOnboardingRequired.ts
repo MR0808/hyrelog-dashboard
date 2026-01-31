@@ -1,19 +1,15 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { safeReturnTo, toCheckEmail } from '@/lib/auth/redirects';
+import { getFreshSession } from '../session';
 
-async function getSessionFromHeaders() {
-  const headerList = await headers();
-  return auth.api.getSession({ headers: headerList });
-}
+/** Get session from DB (bypass cookie cache) so user fields like emailVerified are fresh. */
 
 export const checkOnboardingRequired = async (callbackUrl?: string) => {
-  const session = await getSessionFromHeaders();
+  const session = await getFreshSession();
   const rt = safeReturnTo(callbackUrl);
 
   if (!session) {

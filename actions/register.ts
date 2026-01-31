@@ -21,7 +21,6 @@ import { ActionResult } from '@/types/global';
 let cachedDomains: string[] | null = null;
 let lastFetched: number | null = null;
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in ms
-const slugger = new GithubSlugger();
 
 /* ------------------------------------------------------------------
  * registerInitial

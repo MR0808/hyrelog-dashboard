@@ -1,8 +1,6 @@
 import Image from 'next/image';
 
-interface OnboardingLayoutProps {
-  children: React.ReactNode;
-}
+import { OnboardingLayoutProps } from '@/types/onboarding';
 
 export function OnboardingLayout({ children }: OnboardingLayoutProps) {
   return (
