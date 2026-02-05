@@ -49,7 +49,8 @@ export function AppTopbar({
         email: session.user.email ?? '',
         firstName: (session.user as { firstName?: string }).firstName ?? '',
         lastName: (session.user as { lastName?: string }).lastName ?? '',
-        companyRole: (session.user as { companyRole?: UserType['companyRole'] }).companyRole ?? 'MEMBER',
+        companyRole:
+          (session.user as { companyRole?: UserType['companyRole'] }).companyRole ?? 'MEMBER',
         platformRole: (session.user as { platformRole?: UserType['platformRole'] }).platformRole
       }
     : userProp;
@@ -64,15 +65,16 @@ export function AppTopbar({
       }
     : companyProp;
 
-  const displayName =
-    user ? `${user.firstName} ${user.lastName}`.trim() || user.email : null;
+  const displayName = user ? `${user.firstName} ${user.lastName}`.trim() || user.email : null;
   const userInitials = user
-    ? (`${(user.firstName || '')[0]}${(user.lastName || '')[0]}`.toUpperCase() || user.email[0]?.toUpperCase()) ?? '?'
+    ? ((`${(user.firstName || '')[0]}${(user.lastName || '')[0]}`.toUpperCase() ||
+        user.email[0]?.toUpperCase()) ??
+      '?')
     : '?';
 
   return (
-    <header className="h-20 border-b border-border bg-card flex items-center px-6">
-      <div className="flex items-center gap-2 flex-1">
+    <header className="h-20 border-b border-border bg-card flex justify-end items-center px-6">
+      {/* <div className="flex items-center gap-2 flex-1">
         <nav className="flex items-center gap-2 text-sm">
           {breadcrumb.map((item, index) => (
             <div
@@ -93,16 +95,16 @@ export function AppTopbar({
             </div>
           ))}
         </nav>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-4">
-        {showWorkspaceSwitcher && workspaces.length > 0 && (
+        {/* {showWorkspaceSwitcher && workspaces.length > 0 && (
           <WorkspaceSwitcher
             workspaces={workspaces}
             currentWorkspaceId={currentWorkspaceId}
             onWorkspaceChange={onWorkspaceChange}
           />
-        )}
+        )} */}
 
         <ThemeToggle />
 
@@ -123,15 +125,15 @@ export function AppTopbar({
           >
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                {isPending && !user && (
-                  <p className="text-sm text-muted-foreground">Loading…</p>
-                )}
+                {isPending && !user && <p className="text-sm text-muted-foreground">Loading…</p>}
                 {user && (
                   <>
                     <p className="text-sm font-medium leading-none">{displayName}</p>
                     <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                     {company && (
-                      <p className="text-xs leading-none text-muted-foreground mt-1">{company.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground mt-1">
+                        {company.name}
+                      </p>
                     )}
                   </>
                 )}

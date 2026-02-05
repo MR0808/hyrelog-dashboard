@@ -30,6 +30,7 @@ import {
 import { SaveSchema } from '@/schemas/onboarding';
 import { skipOnboarding, saveOnboarding } from '@/actions/onboarding';
 import { OnboardingFormProps } from '@/types/onboarding';
+import { DATA_REGION_OPTIONS } from '@/lib/constants/regions';
 
 export function OnboardingForm({ data, isAutoNamed }: OnboardingFormProps) {
   const router = useRouter();
@@ -74,9 +75,9 @@ export function OnboardingForm({ data, isAutoNamed }: OnboardingFormProps) {
 
       if (result.success) {
         router.push(result.redirectTo || '/');
+      } else {
+        toast.error(result.message || 'Skip failed. Please try again.');
       }
-
-      toast.error('Skip failed. Please try again.');
     });
   }
 
@@ -203,11 +204,11 @@ export function OnboardingForm({ data, isAutoNamed }: OnboardingFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="APAC">Asia Pacific</SelectItem>
-                        <SelectItem value="AU">Australia</SelectItem>
-                        <SelectItem value="EU">Europe</SelectItem>
-                        <SelectItem value="UK">United Kingdom</SelectItem>
-                        <SelectItem value="US">United States</SelectItem>
+                        {DATA_REGION_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

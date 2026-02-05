@@ -6,7 +6,7 @@ export const mockUser: User = {
   email: 'john@company.com',
   firstName: 'John',
   lastName: 'Doe',
-  companyRole: 'ADMIN' // Change to "MEMBER" to test workspace user view
+  companyRole: 'MEMBER' // Change to "MEMBER" to test workspace user view
 };
 
 export const mockCompany: Company = {

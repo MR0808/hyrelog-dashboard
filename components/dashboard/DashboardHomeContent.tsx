@@ -24,7 +24,7 @@ export function DashboardHomeContent({
   // For workspace users, show first workspace alphabetically
   const defaultWorkspace = workspaces.sort((a, b) => a.name.localeCompare(b.name))[0];
 
-  const currentWorkspace = isCompanyAdmin ? null : defaultWorkspace;
+  const currentWorkspace = !isCompanyAdmin ? null : defaultWorkspace;
 
   // Filter projects for current workspace
   const workspaceProjects = currentWorkspace

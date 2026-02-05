@@ -324,12 +324,18 @@ enum DataRegion {
   AU
 }
 
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model Company {
   id              String     @id @default(uuid())
   slug            String     @unique
   name            String
   preferredRegion DataRegion @default(APAC)
-  isAutoNamed Boolean @default(false)
+  isAutoNamed Boolean @default(false) 
+  status CompanyStatus @default(ACTIVE)
 
   // Link to API plane later (optional)
   apiCompanyId String? @unique
@@ -360,13 +366,19 @@ enum WorkspaceOnboardingStatus {
   COMPLETE
 }
 
+enum WorkspaceStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model Workspace {
   id              String      @id @default(uuid())
   companyId       String
   name            String
   slug            String
   preferredRegion DataRegion?
-
+  status WorkspaceStatus @default(ACTIVE)
+ 
   onboardingStatus        WorkspaceOnboardingStatus @default(PENDING)
   onboardingCompletedAt   DateTime?
   onboardingCompletedBy   String?
@@ -397,6 +409,11 @@ enum ProjectEnvironment {
   TEST
 }
 
+enum ProjectStatus {
+  ACTIVE
+  INACTIVE
+}
+
 model Project {
   id          String             @id @default(uuid())
   workspaceId String
@@ -404,7 +421,8 @@ model Project {
   name        String
   slug        String
   environment ProjectEnvironment @default(PRODUCTION)
-
+  status ProjectStatus @default(ACTIVE)
+  
   preferredRegion DataRegion?
   apiProjectId String? @unique
 

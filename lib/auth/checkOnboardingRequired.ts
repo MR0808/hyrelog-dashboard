@@ -43,6 +43,8 @@ export const checkOnboardingRequired = async (callbackUrl?: string) => {
     redirect(rt);
   }
 
+  console.log('workspaceNeedingOnboarding', workspaceNeedingOnboarding);
+
   // If creator + pending exists, onboarding page can proceed
   return { session, workspaceId: workspaceNeedingOnboarding.id };
 };
