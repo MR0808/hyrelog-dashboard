@@ -3,13 +3,14 @@ import {
   isCompanyAdmin,
   listWorkspacesForCompany,
   listWorkspacesForUser
-} from '@/actions/workspaces';
+} from '@/lib/workspaces/queries';
 import { WorkspacesContent } from '@/components/workspaces/list/WorkspacesContent';
+import { CreateWorkspaceSheet } from '@/components/workspaces/list/CreateWorkspaceSheet';
 
 export default async function WorkspacesPage() {
   const session = await requireDashboardAccess('/workspaces');
 
-  const admin = await isCompanyAdmin(session.userCompany.role);
+  const admin = isCompanyAdmin(session.userCompany.role);
 
   const workspaces = admin
     ? await listWorkspacesForCompany(session.company.id)
@@ -19,6 +20,11 @@ export default async function WorkspacesPage() {
     <WorkspacesContent
       workspaces={workspaces}
       isAdmin={admin}
+      createButton={
+        admin ? (
+          <CreateWorkspaceSheet companyPreferredRegion={session.company.preferredRegion} />
+        ) : null
+      }
     />
   );
 }

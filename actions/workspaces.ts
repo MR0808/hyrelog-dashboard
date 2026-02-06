@@ -1,6 +1,6 @@
 'use server';
 
-// lib/workspaces/queries.ts
+import GithubSlugger from 'github-slugger';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
@@ -16,7 +16,7 @@ export async function isCompanyAdmin(role: CompanyRole) {
 
 export async function listWorkspacesForCompany(companyId: string) {
   return prisma.workspace.findMany({
-    where: { companyId, deletedAt: null },
+    where: { companyId, deletedAt: null, status: { not: 'ARCHIVED' } },
     orderBy: [{ name: 'asc' }, { id: 'asc' }],
     select: {
       id: true,
@@ -33,7 +33,10 @@ export async function listWorkspacesForCompany(companyId: string) {
 
 export async function listWorkspacesForUser(userId: string) {
   const memberships = await prisma.workspaceMember.findMany({
-    where: { userId, workspace: { deletedAt: null } },
+    where: {
+      userId,
+      workspace: { deletedAt: null, status: { not: 'ARCHIVED' } }
+    },
     select: {
       role: true,
       workspace: {
@@ -69,22 +72,14 @@ const RenameWorkspaceSchema = z.object({
   name: z.string().trim().min(2).max(80)
 });
 
-function slugify(input: string) {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/['"]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
 async function uniqueWorkspaceSlug(companyId: string, base: string) {
-  const root = slugify(base) || 'workspace';
+  const root = base.trim() || 'workspace';
+  const slugger = new GithubSlugger();
 
-  // Try root, root-2, root-3, ...
+  // Try root, root-2, root-3, ... via slugger
   for (let i = 0; i < 50; i++) {
-    const candidate = i === 0 ? root : `${root}-${i + 1}`;
+    const label = i === 0 ? root : `${root} ${i + 1}`;
+    const candidate = slugger.slug(label);
     const exists = await prisma.workspace.findFirst({
       where: { companyId, slug: candidate },
       select: { id: true }
@@ -93,49 +88,50 @@ async function uniqueWorkspaceSlug(companyId: string, base: string) {
   }
 
   // fallback (extremely unlikely)
-  return `${root}-${crypto.randomUUID().slice(0, 8)}`;
+  return `${slugger.slug(root)}-${crypto.randomUUID().slice(0, 8)}`;
 }
 
 export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspaceSchema>) {
-  const session = await requireDashboardAccess('/workspaces/new');
+  const session = await requireDashboardAccess('/workspaces');
 
   if (!isCompanyAdmin(session.userCompany.role)) {
-    return { success: false as const, message: 'Not allowed.' };
+    return { ok: false as const, error: 'Not allowed.' };
   }
 
   const parsed = CreateWorkspaceSchema.safeParse(input);
   if (!parsed.success) {
-    return {
-      success: false as const,
-      message: parsed.error.issues[0]?.message ?? 'Invalid fields.'
-    };
+    const message = parsed.error.issues[0]?.message ?? 'Invalid fields.';
+    return { ok: false as const, error: message };
   }
 
   const { name, preferredRegion } = parsed.data;
-
   const slug = await uniqueWorkspaceSlug(session.company.id, name);
+  const now = new Date();
 
-  const ws = await prisma.$transaction(async (tx) => {
-    const workspace = await tx.workspace.create({
+  const workspace = await prisma.$transaction(async (tx) => {
+    const ws = await tx.workspace.create({
       data: {
         companyId: session.company.id,
         name,
         slug,
-        preferredRegion: preferredRegion ?? null
-        // onboardingStatus is unrelated here; leave as default or not set
+        preferredRegion: preferredRegion ?? null,
+        status: 'ACTIVE',
+        isAutoNamed: false,
+        onboardingStatus: 'COMPLETE',
+        onboardingCompletedAt: now,
+        onboardingCompletedBy: session.user.id
       },
       select: { id: true }
     });
 
-    // Add creator as Workspace ADMIN (so they can manage workspace settings)
     await tx.workspaceMember.upsert({
       where: {
-        userId_workspaceId: { userId: session.user.id, workspaceId: workspace.id }
+        userId_workspaceId: { userId: session.user.id, workspaceId: ws.id }
       },
       update: { role: 'ADMIN' },
       create: {
         userId: session.user.id,
-        workspaceId: workspace.id,
+        workspaceId: ws.id,
         role: 'ADMIN'
       }
     });
@@ -146,16 +142,15 @@ export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspac
         companyId: session.company.id,
         action: 'WORKSPACE_CREATED',
         resourceType: 'Workspace',
-        resourceId: workspace.id,
+        resourceId: ws.id,
         details: { name, slug, preferredRegion: preferredRegion ?? null }
       }
     });
 
-    return workspace;
+    return ws;
   });
 
-  // send them to the workspace page (we’ll build it next) or back to list
-  redirect(`/workspaces`);
+  return { ok: true as const, id: workspace.id };
 }
 
 export async function renameWorkspaceAction(input: z.infer<typeof RenameWorkspaceSchema>) {

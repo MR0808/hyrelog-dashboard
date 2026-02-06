@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, LogOut, Settings, User } from 'lucide-react';
+import { Menu, ChevronRight, LogOut, Settings, User } from 'lucide-react';
 
 import { useSession } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -29,6 +29,7 @@ interface AppTopbarProps {
   }[];
   showWorkspaceSwitcher?: boolean;
   onWorkspaceChange?: (workspaceId: string) => void;
+  onToggleSidebar?: () => void;
 }
 
 export function AppTopbar({
@@ -38,7 +39,8 @@ export function AppTopbar({
   currentWorkspaceId,
   breadcrumb,
   showWorkspaceSwitcher = false,
-  onWorkspaceChange
+  onWorkspaceChange,
+  onToggleSidebar
 }: AppTopbarProps) {
   const { data: session, isPending } = useSession();
 
@@ -73,9 +75,22 @@ export function AppTopbar({
     : '?';
 
   return (
-    <header className="h-20 border-b border-border bg-card flex justify-end items-center px-6">
-      {/* <div className="flex items-center gap-2 flex-1">
-        <nav className="flex items-center gap-2 text-sm">
+    <header className="h-16 sm:h-20 border-b border-border bg-card flex items-center justify-between px-4 sm:px-6">
+      <div className="flex items-center gap-3">
+        {onToggleSidebar && (
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="md:hidden"
+            onClick={onToggleSidebar}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Open navigation</span>
+          </Button>
+        )}
+
+        {/* Breadcrumb on larger screens (can be enhanced later) */}
+        <nav className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
           {breadcrumb.map((item, index) => (
             <div
               key={index}
@@ -85,7 +100,7 @@ export function AppTopbar({
               {item.href ? (
                 <a
                   href={item.href}
-                  className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  className="hover:text-foreground transition-colors cursor-pointer"
                 >
                   {item.label}
                 </a>
@@ -95,9 +110,10 @@ export function AppTopbar({
             </div>
           ))}
         </nav>
-      </div> */}
+      </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
+        {/* Workspace switcher (hidden in this iteration, can be re-enabled later) */}
         {/* {showWorkspaceSwitcher && workspaces.length > 0 && (
           <WorkspaceSwitcher
             workspaces={workspaces}
@@ -112,9 +128,9 @@ export function AppTopbar({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="relative h-10 w-10 rounded-full cursor-pointer"
+              className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full cursor-pointer"
             >
-              <Avatar className="h-10 w-10">
+              <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
                 <AvatarFallback className="bg-brand-500 text-white">{userInitials}</AvatarFallback>
               </Avatar>
             </Button>

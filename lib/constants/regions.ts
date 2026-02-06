@@ -22,7 +22,8 @@ export function getDataRegionLabel(value: string | null | undefined): string {
  */
 export const WORKSPACE_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: 'ACTIVE', label: 'Active' },
-  { value: 'INACTIVE', label: 'Inactive' }
+  { value: 'INACTIVE', label: 'Inactive' },
+  { value: 'ARCHIVED', label: 'Archived' }
 ];
 
 export function getWorkspaceStatusLabel(value: string | null | undefined): string {

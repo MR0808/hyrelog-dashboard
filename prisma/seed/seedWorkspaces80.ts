@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import GithubSlugger from 'github-slugger';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma/client';
 
@@ -19,14 +20,15 @@ const NOUNS = [
   'Batch', 'Queue', 'Stream', 'Trace', 'Log', 'Audit', 'Report', 'View', 'Scope'
 ];
 
-function slugify(input: string): string {
-  return input
-    .toLowerCase()
-    .trim()
-    .replace(/['"]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '') || 'workspace';
+const DATA_REGIONS = ['US', 'EU', 'APAC', 'UK', 'AU'] as const;
+const WORKSPACE_STATUSES = ['ACTIVE', 'INACTIVE'] as const;
+
+function randomRegion(): (typeof DATA_REGIONS)[number] {
+  return DATA_REGIONS[Math.floor(Math.random() * DATA_REGIONS.length)];
+}
+
+function randomStatus(): (typeof WORKSPACE_STATUSES)[number] {
+  return WORKSPACE_STATUSES[Math.floor(Math.random() * WORKSPACE_STATUSES.length)];
 }
 
 function randomName(usedNames: Set<string>): string {
@@ -48,19 +50,7 @@ async function main() {
   const prisma = new PrismaClient({ adapter });
 
   const usedNames = new Set<string>();
-  const usedSlugs = new Set<string>();
-
-  function uniqueSlug(base: string): string {
-    let slug = slugify(base);
-    let candidate = slug;
-    let n = 0;
-    while (usedSlugs.has(candidate)) {
-      n += 1;
-      candidate = n === 1 ? `${slug}-${n}` : `${slug}-${n}`;
-    }
-    usedSlugs.add(candidate);
-    return candidate;
-  }
+  const slugger = new GithubSlugger();
 
   const company = await prisma.company.findUnique({
     where: { id: COMPANY_ID },
@@ -77,12 +67,14 @@ async function main() {
 
   for (let i = 0; i < count; i++) {
     const name = randomName(usedNames);
-    const slug = uniqueSlug(name);
+    const slug = slugger.slug(name);
     await prisma.workspace.create({
       data: {
         companyId: COMPANY_ID,
         name,
         slug,
+        preferredRegion: randomRegion(),
+        status: randomStatus(),
         onboardingStatus: 'COMPLETE',
         onboardingCompletedAt: today,
         onboardingCompletedBy: ONBOARDING_COMPLETED_BY_USER_ID

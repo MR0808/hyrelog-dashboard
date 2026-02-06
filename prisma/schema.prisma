@@ -369,6 +369,7 @@ enum WorkspaceOnboardingStatus {
 enum WorkspaceStatus {
   ACTIVE
   INACTIVE
+  ARCHIVED
 }
 
 model Workspace {
@@ -395,11 +396,30 @@ model Workspace {
   members WorkspaceMember[]
   invites Invite[]
   projects Project[]
+  apiKeys WorkspaceApiKey[]
 
   @@index([companyId])
   @@index([apiWorkspaceId])
    @@unique([companyId, slug])
   @@map("workspaces")
+}
+
+model WorkspaceApiKey {
+  id          String    @id @default(uuid())
+  workspaceId String
+  name        String
+  prefix      String
+  hash        String
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, name])
+  @@index([workspaceId])
+  @@map("workspace_api_keys")
 }
 
 enum ProjectEnvironment {

@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import {
-  Plus,
   Search,
   MoreVertical,
   Settings,
@@ -12,7 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import type { Workspace, WorkspacesContentProps } from '@/types/workspace';
@@ -127,19 +133,17 @@ function sortWorkspaces(workspaces: Workspace[], sortKey: SortKey, sortDir: Sort
   });
 }
 
-const ALL_REGION = '';
-const ALL_STATUS = '';
-
-export function WorkspacesContent({ workspaces, isAdmin }: WorkspacesContentProps) {
+export function WorkspacesContent({ workspaces, isAdmin, createButton }: WorkspacesContentProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterRegion, setFilterRegion] = useState<string>(ALL_REGION);
-  const [filterStatus, setFilterStatus] = useState<string>(ALL_STATUS);
+  const [filterRegions, setFilterRegions] = useState<string[]>([]);
+  const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [page, setPage] = useState(1);
 
-  console.log(workspaces);
+  const hasActiveFilters =
+    searchQuery.trim() !== '' || filterRegions.length > 0 || filterStatuses.length > 0;
 
   const filteredWorkspaces = useMemo(
     () =>
@@ -148,12 +152,14 @@ export function WorkspacesContent({ workspaces, isAdmin }: WorkspacesContentProp
           workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           workspace.slug.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesRegion =
-          filterRegion === ALL_REGION || (workspace.preferredRegion ?? '') === filterRegion;
+          filterRegions.length === 0 ||
+          (workspace.preferredRegion != null && filterRegions.includes(workspace.preferredRegion));
         const matchesStatus =
-          filterStatus === ALL_STATUS || (workspace.status ?? 'ACTIVE') === filterStatus;
+          filterStatuses.length === 0 ||
+          (workspace.status != null && filterStatuses.includes(workspace.status));
         return matchesSearch && matchesRegion && matchesStatus;
       }),
-    [workspaces, searchQuery, filterRegion, filterStatus]
+    [workspaces, searchQuery, filterRegions, filterStatuses]
   );
 
   const sortedWorkspaces = useMemo(
@@ -182,90 +188,187 @@ export function WorkspacesContent({ workspaces, isAdmin }: WorkspacesContentProp
     setPage(1);
   };
 
+  const toggleRegion = (value: string) => {
+    setFilterRegions((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+    setPage(1);
+  };
+
+  const toggleStatus = (value: string) => {
+    setFilterStatuses((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    );
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setFilterRegions([]);
+    setFilterStatuses([]);
+    setPage(1);
+  };
+
   return (
-    <div className="p-6">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-foreground">Workspaces</h1>
+    <div className="p-4 sm:p-6">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Header: stacked on mobile, row on desktop */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div key="workspaces-header-title">
+            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Workspaces</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Manage and organize your audit logging workspaces
             </p>
           </div>
-          {!isAdmin && (
-            <Button className="bg-brand-500 hover:bg-brand-600 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Create workspace
-            </Button>
-          )}
+          {createButton != null ? (
+            <div key="workspaces-header-action" className="w-full sm:w-auto">
+              {createButton}
+            </div>
+          ) : null}
         </div>
 
         {/* Search and filters */}
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="relative flex-1 min-w-[200px]">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <div className="relative w-full min-w-0 flex-1 sm:min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search workspaces..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
                   className="pl-10"
                 />
               </div>
-              <Select
-                value={filterRegion === ALL_REGION ? 'all' : filterRegion}
-                onValueChange={(v) => {
-                  setFilterRegion(v === 'all' ? ALL_REGION : v);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Region" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All regions</SelectItem>
-                  {DATA_REGION_OPTIONS.map((opt) => (
-                    <SelectItem
-                      key={opt.value}
-                      value={opt.value}
-                    >
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select
-                value={filterStatus === ALL_STATUS ? 'all' : filterStatus}
-                onValueChange={(v) => {
-                  setFilterStatus(v === 'all' ? ALL_STATUS : v);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  {WORKSPACE_STATUS_OPTIONS.map((opt) => (
-                    <SelectItem
-                      key={opt.value}
-                      value={opt.value}
-                    >
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full min-w-[120px] sm:w-[160px] justify-between font-normal"
+                  >
+                    <span className="truncate">
+                      {filterRegions.length === 0
+                        ? 'All regions'
+                        : filterRegions.length === 1
+                          ? getDataRegionLabel(filterRegions[0])
+                          : `${filterRegions.length} regions`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-(--radix-popover-trigger-width) p-2" align="start">
+                  <div className="flex flex-col gap-1.5 max-h-[280px] overflow-y-auto">
+                    {DATA_REGION_OPTIONS.map((opt) => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer hover:bg-accent"
+                      >
+                        <Checkbox
+                          checked={filterRegions.includes(opt.value)}
+                          onCheckedChange={() => toggleRegion(opt.value)}
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full min-w-[120px] sm:w-[140px] justify-between font-normal"
+                  >
+                    <span className="truncate">
+                      {filterStatuses.length === 0
+                        ? 'All statuses'
+                        : filterStatuses.length === 1
+                          ? getWorkspaceStatusLabel(filterStatuses[0])
+                          : `${filterStatuses.length} statuses`}
+                    </span>
+                    <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-(--radix-popover-trigger-width) p-2" align="start">
+                  <div className="flex flex-col gap-1.5">
+                    {WORKSPACE_STATUS_OPTIONS.map((opt) => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm cursor-pointer hover:bg-accent"
+                      >
+                        <Checkbox
+                          checked={filterStatuses.includes(opt.value)}
+                          onCheckedChange={() => toggleStatus(opt.value)}
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {hasActiveFilters && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearFilters}
+                  className="text-muted-foreground hover:text-foreground shrink-0"
+                >
+                  <X className="h-4 w-4 mr-1.5" />
+                  Clear filters
+                </Button>
+              )}
             </div>
+            {/* Selected filter tags */}
+            {(filterRegions.length > 0 || filterStatuses.length > 0) && (
+              <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t">
+                {filterRegions.map((value) => (
+                  <Badge
+                    key={`region-${value}`}
+                    variant="secondary"
+                    className="pl-2.5 pr-1 py-1 gap-1 font-normal"
+                  >
+                    {getDataRegionLabel(value)}
+                    <button
+                      type="button"
+                      onClick={() => toggleRegion(value)}
+                      aria-label={`Remove region ${getDataRegionLabel(value)}`}
+                      className="rounded-full p-0.5 hover:bg-muted-foreground/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+                {filterStatuses.map((value) => (
+                  <Badge
+                    key={`status-${value}`}
+                    variant="secondary"
+                    className="pl-2.5 pr-1 py-1 gap-1 font-normal"
+                  >
+                    {getWorkspaceStatusLabel(value)}
+                    <button
+                      type="button"
+                      onClick={() => toggleStatus(value)}
+                      aria-label={`Remove status ${getWorkspaceStatusLabel(value)}`}
+                      className="rounded-full p-0.5 hover:bg-muted-foreground/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Workspaces table */}
+        {/* Workspaces table: horizontal scroll on small screens */}
         <Card>
-          <CardContent className="p-6">
-            <Table>
+          <CardContent className="p-4 sm:p-6">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <Table className="min-w-[600px]">
               <TableHeader>
                 <TableRow>
                   <SortHeader
@@ -421,11 +524,12 @@ export function WorkspacesContent({ workspaces, isAdmin }: WorkspacesContentProp
                 )}
               </TableBody>
             </Table>
+            </div>
 
             {/* Pagination */}
             {filteredWorkspaces.length > 0 && (
-              <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t">
-                <div className="flex items-center gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-4 pt-4 border-t">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                   <span className="text-sm text-muted-foreground">
                     {pageSize === 'all'
                       ? `Showing all ${totalCount}`
@@ -438,7 +542,7 @@ export function WorkspacesContent({ workspaces, isAdmin }: WorkspacesContentProp
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger className="w-[100px]">
+                    <SelectTrigger className="w-full min-w-[80px] sm:w-[100px]">
                       <SelectValue placeholder="Per page" />
                     </SelectTrigger>
                     <SelectContent>
