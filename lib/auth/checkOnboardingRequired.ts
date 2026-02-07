@@ -20,6 +20,7 @@ export const checkOnboardingRequired = async (callbackUrl?: string) => {
     redirect(toCheckEmail(session.user.email, rt));
   }
 
+  if (!session.company) redirect(rt);
   // Creator-only rule: invited users/admins should never be forced to onboard
   const isCreator = session.company.createdByUserId === session.user.id;
 

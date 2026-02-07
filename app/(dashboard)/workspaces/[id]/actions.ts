@@ -63,16 +63,13 @@ const DeleteProjectSchema = z.object({
 
 async function getAccess(workspaceId: string) {
   const session = await requireDashboardAccess(`/workspaces/${workspaceId}`);
+  const company = (session as { company: { id: string; preferredRegion: string; slug?: string } }).company;
   const payload = await getWorkspaceDetailForUser(workspaceId, {
     user: { id: session.user.id },
-    company: {
-      id: session.company.id,
-      preferredRegion: session.company.preferredRegion,
-      slug: session.company.slug
-    },
+    company: { id: company.id, preferredRegion: company.preferredRegion, slug: company.slug },
     userCompany: { role: session.userCompany.role }
   });
-  return { session, payload };
+  return { session, company, payload };
 }
 
 export async function renameWorkspaceAction(
@@ -83,12 +80,12 @@ export async function renameWorkspaceAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId, name } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Not allowed.' };
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, name: true, status: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -102,7 +99,7 @@ export async function renameWorkspaceAction(
     await tx.auditLog.create({
       data: {
         userId: session.user.id,
-        companyId: session.company.id,
+        companyId: company.id,
         action: 'WORKSPACE_UPDATED',
         resourceType: 'Workspace',
         resourceId: ws.id,
@@ -124,12 +121,12 @@ export async function archiveWorkspaceAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Not allowed.' };
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, status: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -147,7 +144,7 @@ export async function archiveWorkspaceAction(
     await tx.auditLog.create({
       data: {
         userId: session.user.id,
-        companyId: session.company.id,
+        companyId: company.id,
         action: 'WORKSPACE_UPDATED',
         resourceType: 'Workspace',
         resourceId: ws.id,
@@ -177,12 +174,12 @@ export async function restoreWorkspaceAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Not allowed.' };
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, status: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -196,7 +193,7 @@ export async function restoreWorkspaceAction(
     await tx.auditLog.create({
       data: {
         userId: session.user.id,
-        companyId: session.company.id,
+        companyId: company.id,
         action: 'WORKSPACE_UPDATED',
         resourceType: 'Workspace',
         resourceId: ws.id,
@@ -220,7 +217,7 @@ export async function deleteWorkspaceAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId, confirmSlug } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Not allowed.' };
   if (payload.regionLocked) {
@@ -228,7 +225,7 @@ export async function deleteWorkspaceAction(
   }
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, slug: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -244,7 +241,7 @@ export async function deleteWorkspaceAction(
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'Workspace',
       resourceId: ws.id,
@@ -264,13 +261,13 @@ export async function updateWorkspaceRegionAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId, preferredRegion } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Not allowed.' };
   if (payload.regionLocked) return { ok: false as const, error: 'Region is locked after provisioning.' };
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, apiWorkspaceId: true, status: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -294,7 +291,7 @@ export async function createProjectAction(
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId, name } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
   if (payload.workspace.status !== 'ACTIVE') {
@@ -314,7 +311,7 @@ export async function createProjectAction(
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'Project',
       resourceId: project.id,
@@ -342,7 +339,7 @@ export async function renameProjectAction(
   });
   if (!project) return { ok: false as const, error: 'Project not found.' };
 
-  const { session, payload } = await getAccess(project.workspaceId);
+  const { session, company, payload } = await getAccess(project.workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
   if (payload.workspace.status !== 'ACTIVE') {
@@ -359,7 +356,7 @@ export async function renameProjectAction(
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'Project',
       resourceId: project.id,
@@ -386,7 +383,7 @@ export async function deleteProjectAction(
   });
   if (!project) return { ok: false as const, error: 'Project not found.' };
 
-  const { session, payload } = await getAccess(project.workspaceId);
+  const { session, company, payload } = await getAccess(project.workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canAdmin) return { ok: false as const, error: 'Only workspace admins can delete projects.' };
   if (payload.workspace.status !== 'ACTIVE') {
@@ -401,7 +398,7 @@ export async function deleteProjectAction(
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'Project',
       resourceId: project.id,
@@ -430,7 +427,7 @@ export async function createKeyAction(input: z.infer<typeof CreateKeySchema>) {
     return { ok: false as const, error: parsed.error.issues[0]?.message ?? 'Invalid fields.' };
   }
   const { workspaceId, name } = parsed.data;
-  const { session, payload } = await getAccess(workspaceId);
+  const { session, company, payload } = await getAccess(workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
   if (payload.workspace.status !== 'ACTIVE') {
@@ -438,7 +435,7 @@ export async function createKeyAction(input: z.infer<typeof CreateKeySchema>) {
   }
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true }
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
@@ -459,7 +456,7 @@ export async function createKeyAction(input: z.infer<typeof CreateKeySchema>) {
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'WorkspaceApiKey',
       resourceId: key.id,
@@ -490,7 +487,7 @@ export async function renameKeyAction(input: z.infer<typeof RenameKeySchema>) {
   });
   if (!key) return { ok: false as const, error: 'Key not found.' };
 
-  const { session, payload } = await getAccess(key.workspaceId);
+  const { session, company, payload } = await getAccess(key.workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
   if (payload.workspace.status !== 'ACTIVE') {
@@ -505,7 +502,7 @@ export async function renameKeyAction(input: z.infer<typeof RenameKeySchema>) {
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'WorkspaceApiKey',
       resourceId: key.id,
@@ -531,7 +528,7 @@ export async function revokeKeyAction(input: z.infer<typeof RevokeKeySchema>) {
   if (!key) return { ok: false as const, error: 'Key not found.' };
   if (key.revokedAt) return { ok: false as const, error: 'Key is already revoked.' };
 
-  const { session, payload } = await getAccess(key.workspaceId);
+  const { session, company, payload } = await getAccess(key.workspaceId);
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
 
@@ -543,7 +540,7 @@ export async function revokeKeyAction(input: z.infer<typeof RevokeKeySchema>) {
   await prisma.auditLog.create({
     data: {
       userId: session.user.id,
-      companyId: session.company.id,
+      companyId: company.id,
       action: 'SETTINGS_UPDATE',
       resourceType: 'WorkspaceApiKey',
       resourceId: key.id,

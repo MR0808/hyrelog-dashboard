@@ -4,8 +4,6 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { Gender, PlatformRoleType } from '@/generated/prisma/client';
 import { customSession, openAPI } from 'better-auth/plugins';
-import { error } from 'console';
-
 import { prisma } from '@/lib/prisma';
 import { hashPassword, verifyPassword } from '@/lib/argon2';
 // import { sendVerificationEmail, sendResetEmail } from '@/lib/mail';
@@ -145,12 +143,13 @@ export const auth = betterAuth({
         where: { userId: user.id },
         include: { company: true }
       });
-      if (!userCompany) throw error('no company found');
-      const company = userCompany.company;
+      if (!userCompany) {
+        return { session, user, company: null, userCompany: null };
+      }
       return {
         session,
         user,
-        company,
+        company: userCompany.company,
         userCompany
       };
     }, options),

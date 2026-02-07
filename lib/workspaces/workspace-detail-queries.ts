@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import type { CompanyRole, WorkspaceRole } from '@/generated/prisma/client';
+
+export type { CompanyRole };
 import {
   isCompanyOwnerOrAdmin,
   isCompanyBilling,
@@ -36,6 +38,7 @@ function resolveWorkspaceIdOrSlug(
 export interface WorkspaceDetailMember {
   id: string;
   role: WorkspaceRole;
+  companyRole: CompanyRole | null;
   user: {
     id: string;
     firstName: string;
@@ -150,7 +153,7 @@ export async function getWorkspaceDetailForUser(
       apiWorkspaceId: true,
       createdAt: true,
       isAutoNamed: true,
-      company: { select: { preferredRegion: true } },
+      company: { select: { id: true, preferredRegion: true } },
       _count: { select: { members: true } },
       apiKeys: {
         select: {
@@ -193,6 +196,17 @@ export async function getWorkspaceDetailForUser(
 
   if (!workspace) return null;
 
+  const companyId = (workspace.company as { id: string }).id;
+  const memberUserIds = workspace.members.map((m) => m.user.id);
+  const companyMembers =
+    companyId && memberUserIds.length > 0
+      ? await prisma.companyMember.findMany({
+          where: { companyId, userId: { in: memberUserIds } },
+          select: { userId: true, role: true }
+        })
+      : [];
+  const companyRoleByUserId = new Map(companyMembers.map((cm) => [cm.userId, cm.role]));
+
   const isCoAdmin = isCompanyOwnerOrAdmin(session.userCompany.role);
   const isCoBilling = isCompanyBilling(session.userCompany.role);
   const membership = workspace.members.find((m) => m.user.id === session.user.id);
@@ -231,6 +245,7 @@ export async function getWorkspaceDetailForUser(
     members: workspace.members.map((m) => ({
       id: m.id,
       role: m.role,
+      companyRole: companyRoleByUserId.get(m.user.id) ?? null,
       user: m.user
     })),
     isCompanyOwnerAdmin: isCoAdmin,

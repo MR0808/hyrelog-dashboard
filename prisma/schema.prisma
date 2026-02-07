@@ -75,10 +75,15 @@ model User {
   // Tenancy / RBAC
   companyMemberships   CompanyMember[]
   workspaceMemberships WorkspaceMember[]
+  companyMembersCreatedBy   CompanyMember[] @relation("CompanyMemberCreatedBy")
+  companyMembersUpdatedBy   CompanyMember[] @relation("CompanyMemberUpdatedBy")
+  workspaceMembersCreatedBy WorkspaceMember[] @relation("WorkspaceMemberCreatedBy")
+  workspaceMembersUpdatedBy WorkspaceMember[] @relation("WorkspaceMemberUpdatedBy")
 
   // Invites
   invitesSent     Invite[] @relation("invitesSent")
   invitesAccepted Invite[] @relation("invitesAccepted")
+  invitesRevoked  Invite[] @relation("invitesRevoked")
 
   // Tracking (created companies)
   companiesCreated Company[] @relation("CompanyCreatedBy")
@@ -480,11 +485,16 @@ model CompanyMember {
   companyId String
   role      CompanyRole @default(MEMBER)
 
+  createdByUserId String?
+  updatedByUserId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdBy User? @relation("CompanyMemberCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedBy User? @relation("CompanyMemberUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
 
   @@unique([userId, companyId])
   @@index([companyId])
@@ -500,6 +510,9 @@ model WorkspaceMember {
   workspaceId String
   role        WorkspaceRole @default(READER)
 
+  createdByUserId String?
+  updatedByUserId String?
+
   onboardingCompletedAt DateTime?
   onboardingSeenAt      DateTime?
 
@@ -508,6 +521,8 @@ model WorkspaceMember {
 
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy User?     @relation("WorkspaceMemberCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  updatedBy User?     @relation("WorkspaceMemberUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
 
   @@unique([userId, workspaceId])
   @@index([workspaceId])
@@ -536,6 +551,7 @@ enum InviteScope {
 model Invite {
   id     String       @id @default(uuid())
   email  String
+  emailNormalized String
   status InviteStatus @default(PENDING)
 
   scope InviteScope @default(COMPANY)
@@ -546,7 +562,7 @@ model Invite {
   companyId   String
   workspaceId String?
 
-  // Only set when status=PENDING; null otherwise
+  // Only set when status=PENDING; null when accepted/revoked/expired to allow new invite
   pendingKey String?
 
   companyRole   CompanyRole?
@@ -556,16 +572,23 @@ model Invite {
   acceptedByUserId String?
   acceptedAt       DateTime?
 
+  revokedAt       DateTime?
+  revokedByUserId String?
+
   createdAt DateTime @default(now())
 
-  invitedBy  User  @relation("invitesSent", fields: [invitedByUserId], references: [id], onDelete: Cascade)
-  acceptedBy User? @relation("invitesAccepted", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  invitedBy   User  @relation("invitesSent", fields: [invitedByUserId], references: [id], onDelete: Cascade)
+  acceptedBy  User? @relation("invitesAccepted", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  revokedBy   User? @relation("invitesRevoked", fields: [revokedByUserId], references: [id], onDelete: SetNull)
 
   company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([pendingKey])
   @@index([email])
+  @@index([emailNormalized])
+  @@index([companyId, emailNormalized])
+  @@index([workspaceId, emailNormalized])
   @@index([expiresAt])
   @@index([status])
   @@index([companyId, status])

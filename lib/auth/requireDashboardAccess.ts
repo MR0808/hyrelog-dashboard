@@ -10,7 +10,6 @@ export async function requireDashboardAccess(returnTo?: string) {
   const rt = safeReturnTo(returnTo);
 
   const h = await headers();
-  // Bypass cookie cache so emailVerified etc. are fresh (e.g. right after magic-link verify)
   const session = await auth.api.getSession({ headers: h, query: { disableCookieCache: true } });
 
   if (!session) {
@@ -21,11 +20,17 @@ export async function requireDashboardAccess(returnTo?: string) {
     redirect(toCheckEmail(session.user.email, rt));
   }
 
-  const isCreator = session.company.createdByUserId === session.user.id;
+  // User has no company (e.g. invited but not yet accepted) -> send to invites
+  const sessionWithCompany = session as { company: { id: string; createdByUserId: string | null } | null; userCompany: { role: string } | null };
+  if (!sessionWithCompany.company) {
+    redirect('/invites');
+  }
+
+  const isCreator = sessionWithCompany.company.createdByUserId === session.user.id;
   if (isCreator) {
     const pending = await prisma.workspace.findFirst({
       where: {
-        companyId: session.company.id,
+        companyId: sessionWithCompany.company.id,
         deletedAt: null,
         onboardingStatus: 'PENDING'
       },
@@ -38,5 +43,7 @@ export async function requireDashboardAccess(returnTo?: string) {
     }
   }
 
-  return session;
+  // At this point we've verified company (and thus userCompany) exist; cast so callers get a narrowed type
+  if (!sessionWithCompany.userCompany) redirect('/invites');
+  return session as typeof session & { company: NonNullable<typeof session.company>; userCompany: NonNullable<typeof session.userCompany> };
 }

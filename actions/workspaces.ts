@@ -93,8 +93,10 @@ async function uniqueWorkspaceSlug(companyId: string, base: string) {
 
 export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspaceSchema>) {
   const session = await requireDashboardAccess('/workspaces');
+  const sessionWithCompany = session as { company: { id: string }; userCompany: { role: CompanyRole } };
+  const company = sessionWithCompany.company;
 
-  if (!isCompanyAdmin(session.userCompany.role)) {
+  if (!isCompanyAdmin(sessionWithCompany.userCompany.role)) {
     return { ok: false as const, error: 'Not allowed.' };
   }
 
@@ -105,13 +107,13 @@ export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspac
   }
 
   const { name, preferredRegion } = parsed.data;
-  const slug = await uniqueWorkspaceSlug(session.company.id, name);
+  const slug = await uniqueWorkspaceSlug(company.id, name);
   const now = new Date();
 
   const workspace = await prisma.$transaction(async (tx) => {
     const ws = await tx.workspace.create({
       data: {
-        companyId: session.company.id,
+        companyId: company.id,
         name,
         slug,
         preferredRegion: preferredRegion ?? null,
@@ -139,7 +141,7 @@ export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspac
     await tx.auditLog.create({
       data: {
         userId: session.user.id,
-        companyId: session.company.id,
+        companyId: company.id,
         action: 'WORKSPACE_CREATED',
         resourceType: 'Workspace',
         resourceId: ws.id,
@@ -155,8 +157,10 @@ export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspac
 
 export async function renameWorkspaceAction(input: z.infer<typeof RenameWorkspaceSchema>) {
   const session = await requireDashboardAccess('/workspaces');
+  const sessionWithCompany = session as { company: { id: string }; userCompany: { role: CompanyRole } };
+  const company = sessionWithCompany.company;
 
-  if (!isCompanyAdmin(session.userCompany.role)) {
+  if (!isCompanyAdmin(sessionWithCompany.userCompany.role)) {
     return { success: false as const, message: 'Not allowed.' };
   }
 
@@ -168,7 +172,7 @@ export async function renameWorkspaceAction(input: z.infer<typeof RenameWorkspac
   const { workspaceId, name } = parsed.data;
 
   const ws = await prisma.workspace.findFirst({
-    where: { id: workspaceId, companyId: session.company.id, deletedAt: null },
+    where: { id: workspaceId, companyId: company.id, deletedAt: null },
     select: { id: true, name: true }
   });
 
@@ -183,7 +187,7 @@ export async function renameWorkspaceAction(input: z.infer<typeof RenameWorkspac
     await tx.auditLog.create({
       data: {
         userId: session.user.id,
-        companyId: session.company.id,
+        companyId: company.id,
         action: 'WORKSPACE_UPDATED',
         resourceType: 'Workspace',
         resourceId: ws.id,

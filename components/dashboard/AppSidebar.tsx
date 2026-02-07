@@ -58,16 +58,16 @@ const navSections: {
     ]
   },
   {
-    title: 'Team',
+    title: 'Company',
     items: [
       {
         title: 'Members',
-        href: '/team/members',
+        href: '/company/members',
         icon: Users
       },
       {
         title: 'Invites',
-        href: '/team/invites',
+        href: '/company/invites',
         icon: Mail,
         roles: ['OWNER', 'ADMIN', 'BILLING']
       }

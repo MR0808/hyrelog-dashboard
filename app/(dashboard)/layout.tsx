@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { DashboardSessionProvider } from '@/lib/dashboard/session-context';
@@ -18,6 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const pathname = headersList.get('x-pathname') ?? '';
 
   const session = await requireDashboardAccess(pathname);
+  if (!session.company) redirect('/invites');
 
   const [workspacesRows, companyWithSub] = await Promise.all([
     prisma.workspace.findMany({

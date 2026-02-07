@@ -80,7 +80,8 @@ export default async function WorkspaceDetailPage({
     canWrite: payload.canWrite,
     canAdmin: payload.canAdmin,
     regionLocked: payload.regionLocked,
-    isArchived: payload.isArchived
+    isArchived: payload.isArchived,
+    currentUserId: session.user.id
   };
 
   return (

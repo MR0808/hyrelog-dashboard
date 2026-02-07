@@ -17,6 +17,13 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 import { getDataRegionLabel } from '@/lib/constants/regions';
 import { getWorkspaceStatusLabel } from '@/lib/constants/regions';
 import type {
@@ -36,6 +43,8 @@ import {
   revokeKeyAction,
   deleteProjectAction
 } from '@/app/(dashboard)/workspaces/[id]/actions';
+import { updateWorkspaceRole, removeWorkspaceMember } from '@/actions/members';
+import { InviteToWorkspaceSheet } from './InviteToWorkspaceSheet';
 
 /** Serializable payload (dates as ISO strings) for client. */
 export type WorkspaceDetailKeySerialized = {
@@ -62,6 +71,7 @@ export type WorkspaceDetailContentPayload = {
   canAdmin: boolean;
   regionLocked: boolean;
   isArchived: boolean;
+  currentUserId: string;
 };
 
 const TABS = ['overview', 'projects', 'members', 'keys', 'settings'] as const;
@@ -450,8 +460,11 @@ export function WorkspaceDetailContent({
           className="mt-4"
         >
           <WorkspaceMembersTab
+            workspaceId={payload.workspace.id}
             members={members}
             canAdmin={canAdmin}
+            writeDisabled={writeDisabled}
+            currentUserId={payload.currentUserId}
           />
         </TabsContent>
 
@@ -649,58 +662,188 @@ function WorkspaceProjectsTab({
 }
 
 function WorkspaceMembersTab({
+  workspaceId,
   members,
-  canAdmin
+  canAdmin,
+  writeDisabled,
+  currentUserId
 }: {
+  workspaceId: string;
   members: WorkspaceDetailMember[];
   canAdmin: boolean;
+  writeDisabled: boolean;
+  currentUserId: string;
 }) {
+  const router = useRouter();
+  const [editMemberId, setEditMemberId] = useState<string | null>(null);
+  const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  const editMember = editMemberId ? members.find((m) => m.id === editMemberId) : null;
+  const removeMember = removeMemberId ? members.find((m) => m.id === removeMemberId) : null;
+
+  async function handleRoleChange(memberId: string, role: 'READER' | 'WRITER' | 'ADMIN') {
+    setPending(true);
+    const result = await updateWorkspaceRole({ workspaceMemberId: memberId, role });
+    setPending(false);
+    if (result.ok) {
+      toast.success('Role updated');
+      setEditMemberId(null);
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+  }
+
+  async function handleRemove(memberId: string) {
+    setPending(true);
+    const result = await removeWorkspaceMember({ workspaceMemberId: memberId });
+    setPending(false);
+    if (result.ok) {
+      toast.success('Member removed');
+      setRemoveMemberId(null);
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {members.length} member{members.length !== 1 ? 's' : ''}
         </p>
-        <Button
-          disabled={!canAdmin}
-          variant="outline"
-          size="sm"
-        >
-          Manage members (coming soon)
-        </Button>
+        {canAdmin && !writeDisabled && (
+          <InviteToWorkspaceSheet workspaceId={workspaceId} />
+        )}
+        {canAdmin && writeDisabled && (
+          <Button variant="outline" size="sm" disabled title="Restore workspace to invite">
+            Invite to workspace
+          </Button>
+        )}
       </div>
+      {writeDisabled && canAdmin && (
+        <p className="text-sm text-muted-foreground">
+          This workspace is archived. Restore it to invite or change roles.
+        </p>
+      )}
       <Card>
         <CardContent className="p-0">
           {members.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>No members in this workspace.</p>
+              {canAdmin && !writeDisabled && (
+                <InviteToWorkspaceSheet workspaceId={workspaceId} className="mt-4" />
+              )}
             </div>
           ) : (
             <ul className="divide-y divide-border">
               {members.map((m) => (
                 <li
                   key={m.id}
-                  className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 py-3"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3"
                 >
                   <div>
                     <p className="font-medium">
                       {m.user.firstName} {m.user.lastName}
+                      {m.user.id === currentUserId && (
+                        <span className="text-muted-foreground text-sm ml-2">(you)</span>
+                      )}
                     </p>
                     <p className="text-sm text-muted-foreground">{m.user.email}</p>
                   </div>
-                  <Badge
-                    variant="secondary"
-                    className="w-fit"
-                  >
-                    {m.role}
-                  </Badge>
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                    {m.companyRole && m.companyRole !== 'MEMBER' && (
+                      <Badge variant="outline" className="text-xs">
+                        Company: {m.companyRole}
+                      </Badge>
+                    )}
+                    <Badge variant="secondary">{m.role}</Badge>
+                    {canAdmin && !writeDisabled && m.user.id !== currentUserId && (
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setEditMemberId(m.id)}
+                        >
+                          Edit role
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive"
+                          onClick={() => setRemoveMemberId(m.id)}
+                        >
+                          Remove
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </CardContent>
       </Card>
+
+      {editMember && (
+        <Dialog open onOpenChange={(open) => !open && setEditMemberId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit workspace role</DialogTitle>
+              <DialogDescription>
+                Change role for {editMember.user.firstName} {editMember.user.lastName}.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <Select
+                defaultValue={editMember.role}
+                onValueChange={(value: 'READER' | 'WRITER' | 'ADMIN') =>
+                  handleRoleChange(editMember.id, value)
+                }
+                disabled={pending}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="READER">READER</SelectItem>
+                  <SelectItem value="WRITER">WRITER</SelectItem>
+                  <SelectItem value="ADMIN">ADMIN</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {removeMember && (
+        <Dialog open onOpenChange={(open) => !open && setRemoveMemberId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Remove from workspace?</DialogTitle>
+              <DialogDescription>
+                {removeMember.user.firstName} {removeMember.user.lastName} will lose access to this
+                workspace. They will still have company access if they are a company member.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setRemoveMemberId(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleRemove(removeMember.id)}
+                disabled={pending}
+              >
+                Remove
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }

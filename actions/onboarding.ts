@@ -63,6 +63,7 @@ export async function loadOnboardingData(input?: z.infer<typeof LoadSchema>) {
     redirect(toCheckEmail(session.user.email, returnTo));
   }
 
+  if (!session.company) redirect(returnTo);
   // Creator-only rule
   const isCreator = session.company.createdByUserId === session.user.id;
   if (!isCreator) redirect(returnTo);
@@ -170,6 +171,7 @@ export async function saveOnboarding(values: z.infer<typeof SaveSchema>) {
     };
   }
 
+  if (!session.company) return { success: false as const, message: 'Not allowed.', redirectTo: rt };
   // Creator-only
   if (session.company.createdByUserId !== session.user.id) {
     return { success: false as const, message: 'Not allowed.', redirectTo: rt };
@@ -300,6 +302,7 @@ export async function skipOnboarding(input: { workspaceId: string; returnTo?: st
     };
   }
 
+  if (!session.company) return { success: false as const, message: 'Not allowed.', redirectTo: rt };
   // Creator-only
   if (session.company.createdByUserId !== session.user.id) {
     return { success: false as const, message: 'Not allowed.', redirectTo: rt };
