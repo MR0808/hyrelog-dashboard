@@ -82,7 +82,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     slug: w.slug,
     region: (w.preferredRegion ?? 'APAC').toString(),
     memberCount: w._count.members,
-    status: (w as { status?: string }).status ?? 'ACTIVE',
+    status: ((w as { status?: string }).status ?? 'ACTIVE') as Workspace['status'],
     companyId: session.company.id
   }));
 

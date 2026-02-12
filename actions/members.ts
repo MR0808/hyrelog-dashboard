@@ -648,11 +648,11 @@ export async function transferCompanyOwnership(
 
   const targetMember = await prisma.companyMember.findUnique({
     where: { userId_companyId: { userId: targetUserId, companyId } },
-    select: { id: true, userId: true, role: true },
-    include: {
-      user: {
-        select: { status: true, emailVerified: true }
-      }
+    select: {
+      id: true,
+      userId: true,
+      role: true,
+      user: { select: { status: true, emailVerified: true } }
     }
   });
   if (!targetMember) {

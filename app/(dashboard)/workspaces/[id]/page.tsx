@@ -61,7 +61,7 @@ export default async function WorkspaceDetailPage({
   const workspaceInvites = invitesResult.ok ? invitesResult.invites : [];
 
   // Serialize for client (dates -> ISO strings)
-  const companyId = (payload.workspace.company as { id: string }).id;
+  const companyId = session.company.id;
   const clientPayload = {
     workspace: {
       ...payload.workspace,
@@ -90,6 +90,7 @@ export default async function WorkspaceDetailPage({
     currentUserId: session.user.id,
     workspaceInvites: workspaceInvites.map((i) => ({
       ...i,
+      workspaceRole: i.workspaceRole ?? 'MEMBER',
       expiresAt: i.expiresAt.toISOString(),
       revokedAt: i.revokedAt?.toISOString() ?? null,
       createdAt: i.createdAt.toISOString()

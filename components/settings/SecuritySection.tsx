@@ -18,6 +18,17 @@ import {
 import { changePassword, listSessions, revokeOtherSessions, revokeSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
 
+interface SessionListItem {
+  session: {
+    id: string;
+    userAgent: string | null;
+    ipAddress: string | null;
+    updatedAt: string;
+    expiresAt: string | null;
+    token?: string | null;
+  };
+}
+
 function parseUserAgent(ua: string | null): string {
   if (!ua) return 'Unknown device';
   if (ua.includes('Chrome') && !ua.includes('Edg')) return 'Chrome';
@@ -97,7 +108,7 @@ export function SecuritySection() {
       .finally(() => setRevokeAllPending(false));
   }
 
-  const sessionList = sessions?.sessions ?? [];
+  const sessionList: SessionListItem[] = sessions?.sessions ?? [];
 
   return (
     <div className="space-y-8">
