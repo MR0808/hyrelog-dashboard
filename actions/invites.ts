@@ -9,6 +9,7 @@ import { getWorkspaceDetailForUser } from '@/lib/workspaces/workspace-detail-que
 import { normalizeEmail } from '@/lib/members/utils';
 import { generateInviteToken, hashInviteToken } from '@/lib/invites/token';
 import { isCompanyOwnerOrAdmin, canWorkspaceAdmin } from '@/lib/workspaces/permissions';
+import { sendInviteEmail } from '@/lib/email/sendInviteEmail';
 import type { CompanyRole, WorkspaceRole } from '@/generated/prisma/client';
 
 const INVITE_EXPIRY_DAYS = 7;
@@ -119,7 +120,7 @@ export async function createCompanyInvite(input: z.infer<typeof CreateCompanyInv
 
   const company = await prisma.company.findFirst({
     where: { id: companyId, deletedAt: null },
-    select: { id: true }
+    select: { id: true, name: true }
   });
   if (!company) return { ok: false as const, error: 'Company not found.' };
 
@@ -167,6 +168,29 @@ export async function createCompanyInvite(input: z.infer<typeof CreateCompanyInv
   });
 
   const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/invite/${token}`;
+
+  const inviter = await prisma.user.findUnique({
+    where: { id: sessionWithCompany.user.id },
+    select: { firstName: true, lastName: true }
+  });
+  const inviterName =
+    inviter?.firstName || inviter?.lastName
+      ? [inviter.firstName, inviter.lastName].filter(Boolean).join(' ').trim()
+      : 'A team member';
+
+  const emailResult = await sendInviteEmail({
+    to: email,
+    inviterName,
+    inviteLink,
+    scope: 'company',
+    targetName: company.name,
+    role: companyRole,
+    expiresInDays: INVITE_EXPIRY_DAYS
+  });
+  if (!emailResult.ok) {
+    console.error('Invite created but email failed:', emailResult.error);
+  }
+
   return { ok: true as const, inviteId: invite.id, inviteLink, expiresAt: invite.expiresAt };
 }
 
@@ -193,7 +217,7 @@ export async function createWorkspaceInvite(input: z.infer<typeof CreateWorkspac
 
   const workspace = await prisma.workspace.findFirst({
     where: { id: workspaceId, companyId: company.id, deletedAt: null },
-    select: { id: true, companyId: true }
+    select: { id: true, companyId: true, name: true, company: { select: { name: true } } }
   });
   if (!workspace) return { ok: false as const, error: 'Workspace not found.' };
 
@@ -243,6 +267,30 @@ export async function createWorkspaceInvite(input: z.infer<typeof CreateWorkspac
   });
 
   const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/invite/${token}`;
+
+  const inviter = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { firstName: true, lastName: true }
+  });
+  const inviterName =
+    inviter?.firstName || inviter?.lastName
+      ? [inviter.firstName, inviter.lastName].filter(Boolean).join(' ').trim()
+      : 'A team member';
+
+  const emailResult = await sendInviteEmail({
+    to: email,
+    inviterName,
+    inviteLink,
+    scope: 'workspace',
+    targetName: workspace.name,
+    companyName: workspace.company.name,
+    role: workspaceRole,
+    expiresInDays: INVITE_EXPIRY_DAYS
+  });
+  if (!emailResult.ok) {
+    console.error('Invite created but email failed:', emailResult.error);
+  }
+
   return { ok: true as const, inviteId: invite.id, inviteLink, expiresAt: invite.expiresAt };
 }
 

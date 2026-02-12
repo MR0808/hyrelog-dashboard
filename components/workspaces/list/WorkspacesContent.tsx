@@ -133,7 +133,13 @@ function sortWorkspaces(workspaces: Workspace[], sortKey: SortKey, sortDir: Sort
   });
 }
 
-export function WorkspacesContent({ workspaces, isAdmin, createButton }: WorkspacesContentProps) {
+export function WorkspacesContent({
+  workspaces,
+  isAdmin,
+  createButton,
+  companyName,
+  memberWithNoWorkspaces
+}: WorkspacesContentProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRegions, setFilterRegions] = useState<string[]>([]);
   const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
@@ -141,6 +147,22 @@ export function WorkspacesContent({ workspaces, isAdmin, createButton }: Workspa
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [page, setPage] = useState(1);
+
+  if (memberWithNoWorkspaces) {
+    return (
+      <div className="p-4 sm:p-6">
+        <div className="max-w-lg mx-auto py-12 sm:py-16 text-center">
+          <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">Workspaces</h1>
+          <p className="mt-4 text-muted-foreground">
+            You&apos;re a member of this company, but you don&apos;t yet have access to any workspaces.
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Contact an admin to be assigned to one or more workspaces.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const hasActiveFilters =
     searchQuery.trim() !== '' || filterRegions.length > 0 || filterStatuses.length > 0;

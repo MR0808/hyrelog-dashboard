@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -75,7 +76,15 @@ export function CompanyInvitesContent({
     <div className="p-4 sm:p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold">Company invites</h1>
-        {canManage && <InviteToCompanySheet companyId={companyId} />}
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/company/members" className="inline-flex items-center gap-1.5">
+              <Users className="h-4 w-4" />
+              Members
+            </Link>
+          </Button>
+          {canManage && <InviteToCompanySheet companyId={companyId} />}
+        </div>
       </div>
 
       {!canManage && (

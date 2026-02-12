@@ -2,14 +2,8 @@ import { prisma } from '@/lib/prisma';
 import type { CompanyRole, WorkspaceRole } from '@/generated/prisma/client';
 
 export type { CompanyRole };
-import {
-  isCompanyOwnerOrAdmin,
-  isCompanyBilling,
-  effectiveWorkspaceRole,
-  canWorkspaceWrite,
-  canWorkspaceAdmin,
-  type EffectiveWorkspaceRole
-} from './permissions';
+import type { EffectiveWorkspaceRole } from './permissions';
+import { getEffectiveWorkspaceAccess } from './access';
 
 export interface WorkspaceDetailSession {
   user: { id: string };
@@ -196,6 +190,9 @@ export async function getWorkspaceDetailForUser(
 
   if (!workspace) return null;
 
+  const access = await getEffectiveWorkspaceAccess(session.user.id, workspace.id);
+  if (!access || !access.canRead) return null;
+
   const companyId = (workspace.company as { id: string }).id;
   const memberUserIds = workspace.members.map((m) => m.user.id);
   const companyMembers =
@@ -207,19 +204,11 @@ export async function getWorkspaceDetailForUser(
       : [];
   const companyRoleByUserId = new Map(companyMembers.map((cm) => [cm.userId, cm.role]));
 
-  const isCoAdmin = isCompanyOwnerOrAdmin(session.userCompany.role);
-  const isCoBilling = isCompanyBilling(session.userCompany.role);
-  const membership = workspace.members.find((m) => m.user.id === session.user.id);
-
-  // Access: company admin/billing (same company already enforced) OR has workspace membership
-  if (!isCoAdmin && !isCoBilling && !membership) {
-    return null;
-  }
-
-  const effectiveRole = effectiveWorkspaceRole(
-    session.userCompany.role,
-    membership?.role ?? null
-  );
+  const effectiveRole: EffectiveWorkspaceRole = access.canAdmin
+    ? 'ADMIN'
+    : access.canWrite
+      ? 'WRITER'
+      : 'READER';
 
   const effectiveRegion =
     workspace.preferredRegion ?? workspace.company.preferredRegion ?? 'N/A';
@@ -248,11 +237,11 @@ export async function getWorkspaceDetailForUser(
       companyRole: companyRoleByUserId.get(m.user.id) ?? null,
       user: m.user
     })),
-    isCompanyOwnerAdmin: isCoAdmin,
-    isCompanyBilling: isCoBilling,
+    isCompanyOwnerAdmin: access.companyRole === 'OWNER' || access.companyRole === 'ADMIN',
+    isCompanyBilling: access.companyRole === 'BILLING',
     effectiveRole,
-    canWrite: canWorkspaceWrite(effectiveRole),
-    canAdmin: canWorkspaceAdmin(effectiveRole),
+    canWrite: access.canWrite,
+    canAdmin: access.canAdmin,
     regionLocked: workspace.apiWorkspaceId != null,
     isArchived
   };

@@ -20,7 +20,7 @@ export function isCompanyBilling(companyRole: CompanyRole): boolean {
  * Effective workspace role for UI and action checks.
  * - Company OWNER/ADMIN => Workspace ADMIN
  * - Company BILLING => READER
- * - Else => workspaceMembership.role (or READER if no membership and allowed by access rule)
+ * - Company MEMBER => workspaceMembership.role (MEMBER with no membership has no access; use getEffectiveWorkspaceAccess for that)
  */
 export function effectiveWorkspaceRole(
   companyRole: CompanyRole,

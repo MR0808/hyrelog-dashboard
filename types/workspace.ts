@@ -11,4 +11,8 @@ export interface WorkspacesContentProps {
   isAdmin: boolean;
   /** When provided (e.g. CreateWorkspaceSheet for admins), rendered in the header. */
   createButton?: React.ReactNode;
+  /** Company name for empty state when member has no workspace access. */
+  companyName?: string;
+  /** When true, show dedicated empty state: "You're a member of <Company>, but you don't have workspace access yet." */
+  memberWithNoWorkspaces?: boolean;
 }

@@ -5,6 +5,8 @@ import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { DashboardSessionProvider } from '@/lib/dashboard/session-context';
 import { requireDashboardAccess } from '@/lib/auth/requireDashboardAccess';
 import { prisma } from '@/lib/prisma';
+import { getCompanyAccess } from '@/lib/workspaces/access';
+import { listWorkspacesForCompany, listWorkspacesForUser } from '@/lib/workspaces/queries';
 import type { User, Company, Workspace } from '@/types/dashboard';
 import { SubscriptionStatus } from '@/generated/prisma/client';
 
@@ -21,19 +23,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await requireDashboardAccess(pathname);
   if (!session.company) redirect('/invites');
 
-  const [workspacesRows, companyWithSub] = await Promise.all([
-    prisma.workspace.findMany({
-      where: { companyId: session.company.id, deletedAt: null },
-      orderBy: { name: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        preferredRegion: true,
-        companyId: true,
-        _count: { select: { members: true } }
-      }
-    }),
+  const [access, companyWithSub] = await Promise.all([
+    getCompanyAccess(session.user.id, session.company.id),
     prisma.company.findUnique({
       where: { id: session.company.id },
       select: {
@@ -47,6 +38,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       }
     })
   ]);
+
+  if (!access) redirect('/invites');
+
+  const seeAllWorkspaces = access.canAdmin || access.canBilling;
+  const workspacesRows = seeAllWorkspaces
+    ? await listWorkspacesForCompany(session.company.id)
+    : await listWorkspacesForUser(session.user.id);
 
   const user: User = {
     id: session.user.id,
@@ -84,11 +82,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     slug: w.slug,
     region: (w.preferredRegion ?? 'APAC').toString(),
     memberCount: w._count.members,
-    status: 'ACTIVE',
-    companyId: w.companyId
+    status: (w as { status?: string }).status ?? 'ACTIVE',
+    companyId: session.company.id
   }));
 
-  const isCompanyAdmin = ['OWNER', 'ADMIN', 'BILLING'].includes(user.companyRole);
+  const isCompanyAdmin = seeAllWorkspaces;
 
   const sessionPayload = {
     session,

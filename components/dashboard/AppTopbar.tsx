@@ -3,7 +3,7 @@
 import { Menu, ChevronRight, LogOut, Settings, User } from 'lucide-react';
 
 import { useSession } from '@/lib/auth-client';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/dashboard/ThemeToggle';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { WorkspaceSwitcher } from './WorkspaceSwitcher';
 import type { User as UserType, Company, Workspace } from '@/types/dashboard';
+import Link from 'next/link';
 
 interface AppTopbarProps {
   /** Fallback when session is loading or not available (e.g. mock data). Session is used when available so the topbar updates reactively. */
@@ -51,6 +52,7 @@ export function AppTopbar({
         email: session.user.email ?? '',
         firstName: (session.user as { firstName?: string }).firstName ?? '',
         lastName: (session.user as { lastName?: string }).lastName ?? '',
+        image: (session.user as { image?: string | null }).image ?? undefined,
         companyRole:
           (session.user as { companyRole?: UserType['companyRole'] }).companyRole ?? 'MEMBER',
         platformRole: (session.user as { platformRole?: UserType['platformRole'] }).platformRole
@@ -131,6 +133,7 @@ export function AppTopbar({
               className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full cursor-pointer"
             >
               <Avatar className="h-9 w-9 sm:h-10 sm:w-10">
+                <AvatarImage src={user?.image ?? undefined} alt="" />
                 <AvatarFallback className="bg-brand-500 text-white">{userInitials}</AvatarFallback>
               </Avatar>
             </Button>
@@ -161,8 +164,13 @@ export function AppTopbar({
               <span>Profile</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+              <Link
+                href="/settings"
+                className="w-full flex items-center gap-2 hover:text-foreground transition-colors"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer text-destructive">

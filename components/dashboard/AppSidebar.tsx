@@ -12,7 +12,7 @@ import {
   Mail,
   CreditCard,
   Settings,
-  Shield,
+  User,
   HelpCircle,
   Globe
 } from 'lucide-react';
@@ -31,6 +31,8 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
   roles?: CompanyRole[];
+  /** Custom active state; when not set, pathname === href */
+  isActive?: (pathname: string) => boolean;
 }
 
 const navSections: {
@@ -87,6 +89,13 @@ const navSections: {
   {
     title: 'Settings',
     items: [
+      {
+        title: 'Personal settings',
+        href: '/settings',
+        icon: User,
+        isActive: (path) =>
+          path.startsWith('/settings') && !path.startsWith('/settings/company')
+      },
       {
         title: 'Company Settings',
         href: '/settings/company',
@@ -148,7 +157,9 @@ export function AppSidebar({ companyRole, company }: AppSidebarProps) {
               <nav className="space-y-1 px-2">
                 {visibleItems.map((item) => {
                   const Icon = item.icon;
-                  const isActive = pathname === item.href;
+                  const isActive = item.isActive
+                    ? item.isActive(pathname)
+                    : pathname === item.href;
 
                   return (
                     <Link

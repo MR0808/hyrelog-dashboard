@@ -6,6 +6,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  image?: string | null;
   companyRole: CompanyRole;
   platformRole?: PlatformRole;
 }

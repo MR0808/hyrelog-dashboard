@@ -5,6 +5,7 @@ import {
   getWorkspaceDetailForUser,
   workspaceExistsForCompany
 } from '@/lib/workspaces/workspace-detail-queries';
+import { listWorkspaceInvites } from '@/actions/invites';
 import { WorkspaceDetailContent } from '@/components/workspaces/detail/WorkspaceDetailContent';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,12 +57,17 @@ export default async function WorkspaceDetailPage({
     redirect('/workspaces');
   }
 
+  const invitesResult = await listWorkspaceInvites(payload.workspace.id);
+  const workspaceInvites = invitesResult.ok ? invitesResult.invites : [];
+
   // Serialize for client (dates -> ISO strings)
+  const companyId = (payload.workspace.company as { id: string }).id;
   const clientPayload = {
     workspace: {
       ...payload.workspace,
       createdAt: payload.workspace.createdAt.toISOString()
     },
+    companyId,
     effectiveRegion: payload.effectiveRegion,
     projects: payload.projects.map((p) => ({
       ...p,
@@ -81,7 +87,13 @@ export default async function WorkspaceDetailPage({
     canAdmin: payload.canAdmin,
     regionLocked: payload.regionLocked,
     isArchived: payload.isArchived,
-    currentUserId: session.user.id
+    currentUserId: session.user.id,
+    workspaceInvites: workspaceInvites.map((i) => ({
+      ...i,
+      expiresAt: i.expiresAt.toISOString(),
+      revokedAt: i.revokedAt?.toISOString() ?? null,
+      createdAt: i.createdAt.toISOString()
+    }))
   };
 
   return (

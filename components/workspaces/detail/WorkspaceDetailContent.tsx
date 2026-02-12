@@ -44,7 +44,9 @@ import {
   deleteProjectAction
 } from '@/app/(dashboard)/workspaces/[id]/actions';
 import { updateWorkspaceRole, removeWorkspaceMember } from '@/actions/members';
+import { revokeInvite } from '@/actions/invites';
 import { InviteToWorkspaceSheet } from './InviteToWorkspaceSheet';
+import { AddWorkspaceMembersSheet } from './AddWorkspaceMembersSheet';
 
 /** Serializable payload (dates as ISO strings) for client. */
 export type WorkspaceDetailKeySerialized = {
@@ -56,8 +58,20 @@ export type WorkspaceDetailKeySerialized = {
   createdAt: string;
 };
 
+export type WorkspaceInviteRowSerialized = {
+  id: string;
+  email: string;
+  status: string;
+  workspaceRole: string;
+  expiresAt: string;
+  revokedAt: string | null;
+  createdAt: string;
+  invitedBy: { firstName: string; lastName: string };
+};
+
 export type WorkspaceDetailContentPayload = {
   workspace: Omit<WorkspaceDetailPayload['workspace'], 'createdAt'> & { createdAt: string };
+  companyId: string;
   effectiveRegion: string;
   projects: Array<
     Omit<WorkspaceDetailPayload['projects'][number], 'createdAt'> & { createdAt: string }
@@ -72,6 +86,7 @@ export type WorkspaceDetailContentPayload = {
   regionLocked: boolean;
   isArchived: boolean;
   currentUserId: string;
+  workspaceInvites?: WorkspaceInviteRowSerialized[];
 };
 
 const TABS = ['overview', 'projects', 'members', 'keys', 'settings'] as const;
@@ -145,7 +160,8 @@ export function WorkspaceDetailContent({
     canWrite,
     canAdmin,
     regionLocked,
-    isArchived
+    isArchived,
+    workspaceInvites = []
   } = payload;
 
   const writeDisabled = isArchived;
@@ -461,7 +477,9 @@ export function WorkspaceDetailContent({
         >
           <WorkspaceMembersTab
             workspaceId={payload.workspace.id}
+            companyId={payload.companyId}
             members={members}
+            invites={workspaceInvites}
             canAdmin={canAdmin}
             writeDisabled={writeDisabled}
             currentUserId={payload.currentUserId}
@@ -663,13 +681,17 @@ function WorkspaceProjectsTab({
 
 function WorkspaceMembersTab({
   workspaceId,
+  companyId,
   members,
+  invites,
   canAdmin,
   writeDisabled,
   currentUserId
 }: {
   workspaceId: string;
+  companyId: string;
   members: WorkspaceDetailMember[];
+  invites: WorkspaceInviteRowSerialized[];
   canAdmin: boolean;
   writeDisabled: boolean;
   currentUserId: string;
@@ -677,10 +699,28 @@ function WorkspaceMembersTab({
   const router = useRouter();
   const [editMemberId, setEditMemberId] = useState<string | null>(null);
   const [removeMemberId, setRemoveMemberId] = useState<string | null>(null);
+  const [revokeId, setRevokeId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [isPendingRevoke, startTransition] = useTransition();
 
   const editMember = editMemberId ? members.find((m) => m.id === editMemberId) : null;
   const removeMember = removeMemberId ? members.find((m) => m.id === removeMemberId) : null;
+  const revokeInv = revokeId ? invites.find((i) => i.id === revokeId) : null;
+
+  function handleRevoke(inviteId: string) {
+    startTransition(async () => {
+      const result = await revokeInvite({ inviteId });
+      if (result.ok) {
+        toast.success('Invite revoked');
+        setRevokeId(null);
+        router.refresh();
+      } else {
+        toast.error(result.error);
+      }
+    });
+  }
+
+  const pendingInvites = invites.filter((i) => i.status === 'PENDING' && !i.revokedAt);
 
   async function handleRoleChange(memberId: string, role: 'READER' | 'WRITER' | 'ADMIN') {
     setPending(true);
@@ -713,9 +753,18 @@ function WorkspaceMembersTab({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <p className="text-sm text-muted-foreground">
           {members.length} member{members.length !== 1 ? 's' : ''}
+          {invites.length > 0 && (
+            <> · {pendingInvites.length} pending invite{pendingInvites.length !== 1 ? 's' : ''}</>
+          )}
         </p>
         {canAdmin && !writeDisabled && (
-          <InviteToWorkspaceSheet workspaceId={workspaceId} />
+          <div className="flex flex-wrap gap-2">
+            <AddWorkspaceMembersSheet
+              workspaceId={workspaceId}
+              companyId={companyId}
+            />
+            <InviteToWorkspaceSheet workspaceId={workspaceId} />
+          </div>
         )}
         {canAdmin && writeDisabled && (
           <Button variant="outline" size="sm" disabled title="Restore workspace to invite">
@@ -735,7 +784,14 @@ function WorkspaceMembersTab({
               <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p>No members in this workspace.</p>
               {canAdmin && !writeDisabled && (
-                <InviteToWorkspaceSheet workspaceId={workspaceId} className="mt-4" />
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                  <AddWorkspaceMembersSheet
+                    workspaceId={workspaceId}
+                    companyId={companyId}
+                    className="mt-0"
+                  />
+                  <InviteToWorkspaceSheet workspaceId={workspaceId} className="mt-0" />
+                </div>
               )}
             </div>
           ) : (
@@ -788,6 +844,53 @@ function WorkspaceMembersTab({
         </CardContent>
       </Card>
 
+      {invites.length > 0 && (
+        <Card>
+          <CardContent className="p-0">
+            <div className="px-4 py-3 border-b border-border">
+              <h3 className="font-medium">Pending invites</h3>
+              <p className="text-sm text-muted-foreground">
+                Invites to this workspace (expire after 7 days)
+              </p>
+            </div>
+            <ul className="divide-y divide-border">
+              {invites.map((i) => (
+                <li
+                  key={i.id}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 py-3"
+                >
+                  <div>
+                    <p className="font-medium">{i.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Role: {i.workspaceRole} · Invited by {i.invitedBy.firstName}{' '}
+                      {i.invitedBy.lastName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Expires {new Date(i.expiresAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge variant={i.status === 'PENDING' && !i.revokedAt ? 'default' : 'secondary'}>
+                      {i.revokedAt ? 'Revoked' : i.status}
+                    </Badge>
+                    {canAdmin && !writeDisabled && i.status === 'PENDING' && !i.revokedAt && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive"
+                        onClick={() => setRevokeId(i.id)}
+                      >
+                        Revoke
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
       {editMember && (
         <Dialog open onOpenChange={(open) => !open && setEditMemberId(null)}>
           <DialogContent>
@@ -839,6 +942,32 @@ function WorkspaceMembersTab({
                 disabled={pending}
               >
                 Remove
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {revokeInv && (
+        <Dialog open onOpenChange={(open) => !open && setRevokeId(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Revoke invite?</DialogTitle>
+              <DialogDescription>
+                The invite sent to {revokeInv.email} will be cancelled. They won&apos;t be able to
+                use the link.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={() => setRevokeId(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => handleRevoke(revokeInv.id)}
+                disabled={isPendingRevoke}
+              >
+                Revoke
               </Button>
             </div>
           </DialogContent>
