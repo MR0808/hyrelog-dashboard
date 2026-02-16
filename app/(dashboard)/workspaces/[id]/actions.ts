@@ -4,11 +4,21 @@ import GithubSlugger from 'github-slugger';
 import { revalidatePath } from 'next/cache';
 import { randomBytes } from 'crypto';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@/generated/prisma/client';
 import { z } from 'zod';
 import { requireDashboardAccess } from '@/lib/auth/requireDashboardAccess';
 import { getWorkspaceDetailForUser } from '@/lib/workspaces/workspace-detail-queries';
 import { uniqueProjectSlug } from '@/lib/workspaces/slug';
 import { hashPassword } from '@/lib/argon2';
+import {
+  archiveWorkspaceAndSync,
+  restoreWorkspaceAndSync,
+  revokeKeyAndSync,
+  createKeyAndSync,
+  syncKeyAfterCreate,
+} from '@/actions/provisioning';
+import { isHyreLogApiConfigured } from '@/lib/hyrelog-api';
+import { isApiKeySyncConfigured } from '@/lib/hyrelog-api/key-format';
 
 const RenameWorkspaceSchema = z.object({
   workspaceId: z.string().uuid(),
@@ -132,33 +142,30 @@ export async function archiveWorkspaceAction(
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
   if (ws.status !== 'ACTIVE') return { ok: false as const, error: 'Workspace is not active.' };
 
-  await prisma.$transaction(async (tx) => {
-    const revoked = await tx.workspaceApiKey.updateMany({
-      where: { workspaceId: ws.id, revokedAt: null },
-      data: { revokedAt: new Date() }
-    });
-    await tx.workspace.update({
-      where: { id: ws.id },
-      data: { status: 'ARCHIVED' }
-    });
-    await tx.auditLog.create({
-      data: {
-        userId: session.user.id,
-        companyId: company.id,
-        action: 'WORKSPACE_UPDATED',
-        resourceType: 'Workspace',
-        resourceId: ws.id,
-        details: {
-          workspace: {
-            action: 'archive',
-            from: { status: 'ACTIVE' },
-            to: { status: 'ARCHIVED' },
-            provisioned: payload.regionLocked,
-            revokedKeysCount: revoked.count
-          }
+  const actor = {
+    userId: session.user.id,
+    userEmail: (session.user as { email?: string | null }).email ?? null,
+    userRole: (session.userCompany as { role: string }).role,
+  };
+  const result = await archiveWorkspaceAndSync(workspaceId, actor);
+  if (!result.ok) return { ok: false as const, error: result.error };
+
+  await prisma.auditLog.create({
+    data: {
+      userId: session.user.id,
+      companyId: company.id,
+      action: 'WORKSPACE_UPDATED',
+      resourceType: 'Workspace',
+      resourceId: ws.id,
+      details: {
+        workspace: {
+          action: 'archive',
+          from: { status: 'ACTIVE' },
+          to: { status: 'ARCHIVED' },
+          provisioned: payload.regionLocked,
         }
       }
-    });
+    }
   });
 
   revalidatePath(`/workspaces/${workspaceId}`);
@@ -185,23 +192,25 @@ export async function restoreWorkspaceAction(
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
   if (ws.status !== 'ARCHIVED') return { ok: false as const, error: 'Workspace is not archived.' };
 
-  await prisma.$transaction(async (tx) => {
-    await tx.workspace.update({
-      where: { id: ws.id },
-      data: { status: 'ACTIVE' }
-    });
-    await tx.auditLog.create({
-      data: {
-        userId: session.user.id,
-        companyId: company.id,
-        action: 'WORKSPACE_UPDATED',
-        resourceType: 'Workspace',
-        resourceId: ws.id,
-        details: {
-          workspace: { action: 'restore', from: { status: 'ARCHIVED' }, to: { status: 'ACTIVE' } }
-        }
+  const actor = {
+    userId: session.user.id,
+    userEmail: (session.user as { email?: string | null }).email ?? null,
+    userRole: (session.userCompany as { role: string }).role,
+  };
+  const result = await restoreWorkspaceAndSync(workspaceId, actor);
+  if (!result.ok) return { ok: false as const, error: result.error };
+
+  await prisma.auditLog.create({
+    data: {
+      userId: session.user.id,
+      companyId: company.id,
+      action: 'WORKSPACE_UPDATED',
+      resourceType: 'Workspace',
+      resourceId: ws.id,
+      details: {
+        workspace: { action: 'restore', from: { status: 'ARCHIVED' }, to: { status: 'ACTIVE' } }
       }
-    });
+    }
   });
 
   revalidatePath(`/workspaces/${workspaceId}`);
@@ -440,18 +449,60 @@ export async function createKeyAction(input: z.infer<typeof CreateKeySchema>) {
   });
   if (!ws) return { ok: false as const, error: 'Workspace not found.' };
 
+  const actor = {
+    userId: session.user.id,
+    userEmail: (session.user as { email?: string | null }).email ?? null,
+    userRole: (session.userCompany as { role: string }).role,
+  };
+
+  if (payload.workspace.apiWorkspaceId && isApiKeySyncConfigured()) {
+    const companyRegion = payload.workspace.company?.preferredRegion ?? 'US';
+    const result = await createKeyAndSync(workspaceId, name.trim(), companyRegion, actor);
+    if (!result.ok) return { ok: false as const, error: result.error };
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        companyId: company.id,
+        action: 'SETTINGS_UPDATE',
+        resourceType: 'WorkspaceApiKey',
+        resourceId: result.keyId,
+        details: { apiKey: { action: 'create', id: result.keyId, name: name.trim(), prefix: result.prefix } }
+      }
+    });
+    revalidatePath(`/workspaces/${workspaceId}`);
+    return {
+      ok: true as const,
+      id: result.keyId,
+      name: name.trim(),
+      prefix: result.prefix,
+      secret: result.fullKey
+    };
+  }
+
   const { secret, prefix } = generateKeySecret();
   const hash = await hashPassword(secret);
 
-  const key = await prisma.workspaceApiKey.create({
-    data: {
-      workspaceId,
-      name: name.trim(),
-      prefix,
-      hash
-    },
-    select: { id: true, name: true, prefix: true }
-  });
+  let key: { id: string; name: string; prefix: string };
+  try {
+    key = await prisma.workspaceApiKey.create({
+      data: {
+        workspaceId,
+        name: name.trim(),
+        prefix,
+        hash
+      },
+      select: { id: true, name: true, prefix: true }
+    });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return { ok: false as const, error: 'A key with this name already exists in this workspace.' };
+    }
+    throw err;
+  }
+
+  if (payload.workspace.apiWorkspaceId && isHyreLogApiConfigured() && key.prefix.startsWith('hlk_')) {
+    await syncKeyAfterCreate(key.id, actor).catch(() => {});
+  }
 
   await prisma.auditLog.create({
     data: {
@@ -532,10 +583,13 @@ export async function revokeKeyAction(input: z.infer<typeof RevokeKeySchema>) {
   if (!payload) return { ok: false as const, error: 'Not authorized.' };
   if (!payload.canWrite) return { ok: false as const, error: 'Not allowed.' };
 
-  await prisma.workspaceApiKey.update({
-    where: { id: key.id },
-    data: { revokedAt: new Date() }
-  });
+  const actor = {
+    userId: session.user.id,
+    userEmail: (session.user as { email?: string | null }).email ?? null,
+    userRole: (session.userCompany as { role: string }).role,
+  };
+  const result = await revokeKeyAndSync(keyId, actor);
+  if (!result.ok) return { ok: false as const, error: result.error };
 
   await prisma.auditLog.create({
     data: {

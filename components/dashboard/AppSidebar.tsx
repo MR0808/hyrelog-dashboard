@@ -14,7 +14,8 @@ import {
   Settings,
   User,
   HelpCircle,
-  Globe
+  Globe,
+  BookOpen
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -101,6 +102,16 @@ const navSections: {
         href: '/settings/company',
         icon: Settings,
         roles: ['OWNER', 'ADMIN']
+      }
+    ]
+  },
+  {
+    title: 'Developer',
+    items: [
+      {
+        title: 'API Reference',
+        href: '/reference',
+        icon: BookOpen
       }
     ]
   }

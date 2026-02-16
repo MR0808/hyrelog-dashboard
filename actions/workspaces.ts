@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { redirect } from 'next/navigation';
 import { requireDashboardAccess } from '@/lib/auth/requireDashboardAccess';
+import { provisionWorkspaceAndStore } from '@/actions/provisioning';
 
 import type { CompanyRole } from '@/generated/prisma/client';
 
@@ -151,6 +152,16 @@ export async function createWorkspaceAction(input: z.infer<typeof CreateWorkspac
 
     return ws;
   });
+
+  const sessionWithUser = session as { user: { id: string; email: string | null }; userCompany: { role: string } };
+  const prov = await provisionWorkspaceAndStore(workspace.id, {
+    userId: sessionWithUser.user.id,
+    userEmail: sessionWithUser.user.email ?? null,
+    userRole: sessionWithUser.userCompany.role,
+  });
+  if (!prov.ok) {
+    return { ok: false as const, error: prov.error };
+  }
 
   return { ok: true as const, id: workspace.id };
 }
